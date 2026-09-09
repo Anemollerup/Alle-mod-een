@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Alle Mod Publikum</title>
+
+<style>
+body {
+    font-family: Arial, sans-serif;
+    background: #f4f6f8;
+    margin: 0;
+    padding: 30px;
+}
+
+.container {
+    max-width: 1000px;
+    margin: auto;
+}
+
+h1 {
+    color: #005a9c;
+}
+
+.card {
+    background: white;
+    padding: 20px;
+    margin-bottom: 20px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+input, button {
+    padding: 10px;
+    font-size: 16px;
+}
+
+input {
+    width: 120px;
+}
+
+button {
+    background: #005a9c;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    margin-left: 8px;
+}
+
+button:hover {
+    background: #00447a;
+}
+
+.stat {
+    font-size: 20px;
+    margin: 8px 0;
+}
+
+.winner {
+    font-size: 28px;
+    font-weight: bold;
+    color: green;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th, td {
+    border-bottom: 1px solid #ddd;
+    padding: 8px;
+    text-align: center;
+}
+
+.number {
+    font-weight: bold;
+    color: #005a9c;
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+
+<h1>🎯 Alle Mod Publikum</h1>
+
+<div class="card">
+    <h2>Dyst</h2>
+
+    <label>Spørgsmål:</label><br>
+    <input id="question" style="width:500px"
+           value="Hvor mange sekunder tager det at spise 30 skumfiduser?">
+</div>
+
+<div class="card">
+    <h2>Deltagerens gæt</h2>
+
+    <input type="number" id="playerGuess">
+    <button onclick="savePlayer()">Gem gæt</button>
+
+    <p class="stat">
+        Deltagerens gæt:
+        <span id="playerDisplay">-</span>
+    </p>
+</div>
+
+<div class="card">
+    <h2>Publikums svar</h2>
+
+    <input type="number" id="audienceGuess">
+    <button onclick="submitAudience()">Afgiv svar</button>
+
+    <p>
+        Antal svar:
+        <span class="number" id="count">0</span>
+    </p>
+</div>
+
+<div class="card">
+    <h2>Resultat</h2>
+
+    <label>Faktisk resultat:</label>
+    <input type="number" id="actualResult">
+
+    <button onclick="calculateWinner()">
+        Beregn vinder
+    </button>
+
+    <div id="results"></div>
+</div>
+
+<div class="card">
+    <h2>Publikumsdata</h2>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Antal svar</th>
+                <th>Gennemsnit</th>
+                <th>Laveste</th>
+                <th>Højeste</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            <tr>
+                <td id="statCount">0</td>
+                <td id="statAverage">-</td>
+                <td id="statMin">-</td>
+                <td id="statMax">-</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+</div>
+
+<script>
+
+let playerGuess = null;
+let audienceGuesses = [];
+
+function savePlayer() {
+
+    playerGuess =
+        Number(document.getElementById("playerGuess").value);
+
+    document.getElementById("playerDisplay").textContent =
+        playerGuess;
+}
+
+function submitAudience() {
+
+    const value =
+        Number(document.getElementById("audienceGuess").value);
+
+    if (!isNaN(value) && value > 0) {
+        audienceGuesses.push(value);
+
+        document.getElementById("count").textContent =
+            audienceGuesses.length;
+
+        updateStats();
+
+        document.getElementById("audienceGuess").value = "";
+    }
+}
+
+function updateStats() {
+
+    if (audienceGuesses.length === 0) return;
+
+    const avg =
+        audienceGuesses.reduce((a,b)=>a+b,0)
+        / audienceGuesses.length;
+
+    const min =
+        Math.min(...audienceGuesses);
+
+    const max =
+        Math.max(...audienceGuesses);
+
+    document.getElementById("statCount").textContent =
+        audienceGuesses.length;
+
+    document.getElementById("statAverage").textContent =
+        avg.toFixed(1);
+
+    document.getElementById("statMin").textContent =
+        min;
+
+    document.getElementById("statMax").textContent =
+        max;
+}
+
+function calculateWinner() {
+
+    const actual =
+        Number(document.getElementById("actualResult").value);
+
+    if (
+        playerGuess === null ||
+        audienceGuesses.length === 0 ||
+        isNaN(actual)
+    ) {
+        alert("Mangler data");
+        return;
+    }
+
+    const average =
+        audienceGuesses.reduce((a,b)=>a+b,0)
+        / audienceGuesses.length;
+
+    const playerDistance =
+        Math.abs(playerGuess - actual);
+
+    const audienceDistance =
+        Math.abs(average - actual);
+
+    let winner;
+
+    if (playerDistance < audienceDistance) {
+        winner = "🧍 DELTAGEREN";
+    }
+    else if (audienceDistance < playerDistance) {
+        winner = "👥 PUBLIKUM";
+    }
+    else {
+        winner = "🤝 UAFGJORT";
+    }
+
+    document.getElementById("results").innerHTML = `
+        <p class="stat">
+            Faktisk resultat:
+            <strong>${actual}</strong>
+        </p>
+
+        <p class="stat">
+            Publikumsgennemsnit:
+            <strong>${average.toFixed(1)}</strong>
+        </p>
+
+        <p class="stat">
+            Deltagerens gæt:
+            <strong>${playerGuess}</strong>
+        </p>
+
+        <p class="stat">
+            Deltager afvigelse:
+            <strong>${playerDistance.toFixed(1)}</strong>
+        </p>
+
+        <p class="stat">
+            Publikum afvigelse:
+            <strong>${audienceDistance.toFixed(1)}</strong>
+        </p>
+
+        <p class="winner">${winner} VINDER!</p>
+    `;
+}
+
+</script>
+
+</body>
+</html>
