@@ -122,6 +122,10 @@ onSnapshot(
    data.round || 1;
 
  document
+  .getElementById("histogram")
+  .style.display = "none";
+
+ document
   .getElementById("count")
   .innerText = "0";
 
@@ -274,6 +278,16 @@ setInterval(()=>{
   if(remaining <= 0){
 
   document
+    .getElementById("timer")
+    .innerText =
+    "⏰ Tiden er udløbet";
+
+  document
+    .getElementById("histogram")
+    .style.display =
+    "block";
+    
+  document
     .getElementById("results")
     .innerHTML = `
 
@@ -293,8 +307,7 @@ setInterval(()=>{
       </h2>
 
     `;
-
-    if(showAverage){
+      if(showAverage){
 
       document
         .getElementById("results")
@@ -307,9 +320,26 @@ setInterval(()=>{
 
       `;
 
-      }
+  }
 
-    if(showActual){
+  }
+  else{
+
+    document
+      .getElementById("timer")
+      .innerText =
+      remaining + " sek";
+
+    document
+      .getElementById("histogram")
+      .style.display =
+      "none";
+
+  }
+
+
+
+  if(showActual){
 
       const audienceDistance =
         Math.abs(
@@ -343,18 +373,8 @@ setInterval(()=>{
       </h1>
 
       `;
-    }
-}
+  }
 
-
-else{
-
-  document
-    .getElementById("timer")
-    .innerText =
-    remaining + " sek";
-
-}
 
 }, 250);
 
@@ -379,4 +399,4 @@ else{
 <div id="results"></div>
 
 
-<div id="histogram"></div>
+<div id="histogram" style="display:none;"></div>
