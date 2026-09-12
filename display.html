@@ -97,6 +97,7 @@ let averageGuess = 0;
 let showAverage = false;
 let actualResult = 0;
 let showActual = false;
+let previousRound = 0;
 
 
 onSnapshot(
@@ -121,17 +122,26 @@ onSnapshot(
  currentRound =
    data.round || 1;
 
+   if(currentRound !== previousRound){
+
+  document
+    .getElementById("count")
+    .innerText = "0";
+
+  document
+    .getElementById("histogram")
+    .innerHTML = "";
+
+  document
+    .getElementById("histogram")
+    .style.display = "none";
+
+  previousRound = currentRound;
+}
+
  document
   .getElementById("histogram")
   .style.display = "none";
-
- document
-  .getElementById("count")
-  .innerText = "0";
-
- document
-  .getElementById("histogram")
-  .innerHTML = "";
 
  roundStartedAt =
    data.roundStartedAt || 0;
