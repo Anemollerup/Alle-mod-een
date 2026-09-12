@@ -93,6 +93,11 @@ onSnapshot(
     if(answeredRound != currentRound){
 
       document
+        .getElementById("openStatus")
+        .innerText =
+        "✅ Afstemning åben";
+
+      document
         .getElementById("guess")
         .style.display = "inline";
 
@@ -125,12 +130,7 @@ onSnapshot(
     acceptAnswers =
       data.acceptAnswers;
 
-    document
-      .getElementById("openStatus")
-      .innerText =
-      acceptAnswers
-      ? "✅ Afstemning åben"
-      : "⛔ Afstemning lukket";
+
 
   }
 );
@@ -246,6 +246,11 @@ setInterval(()=>{
       document
         .getElementById("guess")
         .disabled = true;
+
+      document
+        .getElementById("openStatus")
+        .innerText =
+        "⛔ Afstemning lukket";
   
 
     }
