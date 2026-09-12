@@ -1,285 +1,255 @@
 <!DOCTYPE html>
 <html lang="da">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Alle Mod Publikum</title>
-
-<style>
-body {
-    font-family: Arial, sans-serif;
-    background: #f4f6f8;
-    margin: 0;
-    padding: 30px;
-}
-
-.container {
-    max-width: 1000px;
-    margin: auto;
-}
-
-h1 {
-    color: #005a9c;
-}
-
-.card {
-    background: white;
-    padding: 20px;
-    margin-bottom: 20px;
-    border-radius: 12px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-}
-
-input, button {
-    padding: 10px;
-    font-size: 16px;
-}
-
-input {
-    width: 120px;
-}
-
-button {
-    background: #005a9c;
-    color: white;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    margin-left: 8px;
-}
-
-button:hover {
-    background: #00447a;
-}
-
-.stat {
-    font-size: 20px;
-    margin: 8px 0;
-}
-
-.winner {
-    font-size: 28px;
-    font-weight: bold;
-    color: green;
-}
-
-table {
-    width: 100%;
-    border-collapse: collapse;
-}
-
-th, td {
-    border-bottom: 1px solid #ddd;
-    padding: 8px;
-    text-align: center;
-}
-
-.number {
-    font-weight: bold;
-    color: #005a9c;
-}
-</style>
+  <meta charset="UTF-8">
+  <title>Alle mod Publikum</title>
 </head>
+
 <body>
 
-<div class="container">
+<h1 id="question">Indlæser spørgsmål...</h1>
 
-<h1>🎯 Alle Mod Publikum</h1>
+<p id="openStatus">
+Afstemning åben
+</p>
 
-<div class="card">
-    <h2>Dyst</h2>
+<input id="guess" type="number">
 
-    <label>Spørgsmål:</label><br>
-    <input id="question" style="width:500px"
-           value="Hvor mange sekunder tager det at spise 30 skumfiduser?">
-</div>
+<button id="sendBtn">
+Send svar
+</button>
 
-<div class="card">
-    <h2>Deltagerens gæt</h2>
+<p id="status"></p>
 
-    <input type="number" id="playerGuess">
-    <button onclick="savePlayer()">Gem gæt</button>
+<h2 id="timer">
+      30
+</h2>
 
-    <p class="stat">
-        Deltagerens gæt:
-        <span id="playerDisplay">-</span>
-    </p>
-</div>
+<script type="module">
 
-<div class="card">
-    <h2>Publikums svar</h2>
+import { initializeApp }
+from "https://www.gstatic.com/firebasejs/12.2.1/firebase-app.js";
 
-    <input type="number" id="audienceGuess">
-    <button onclick="submitAudience()">Afgiv svar</button>
+import {
+ getFirestore,
+ collection,
+ addDoc,
+ doc,
+ onSnapshot,
+ query,
+ getDoc
+}
+from "https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js";
 
-    <p>
-        Antal svar:
-        <span class="number" id="count">0</span>
-    </p>
-</div>
+const firebaseConfig = {
 
-<div class="card">
-    <h2>Resultat</h2>
+ apiKey: "GFD3K4mE3uLxfVnTOKfz9KU8HuPMVrY",
 
-    <label>Faktisk resultat:</label>
-    <input type="number" id="actualResult">
+ authDomain:
+ "alle-mod-en.firebaseapp.com",
 
-    <button onclick="calculateWinner()">
-        Beregn vinder
-    </button>
+ projectId:
+ "alle-mod-en",
 
-    <div id="results"></div>
-</div>
+ storageBucket:
+ "alle-mod-en.firebasestorage.app",
 
-<div class="card">
-    <h2>Publikumsdata</h2>
+ messagingSenderId:
+ "982698004873",
 
-    <table>
-        <thead>
-            <tr>
-                <th>Antal svar</th>
-                <th>Gennemsnit</th>
-                <th>Laveste</th>
-                <th>Højeste</th>
-            </tr>
-        </thead>
+ appId:
+ "1:982698004873:web:6d0494926004041fae1158"
 
-        <tbody>
-            <tr>
-                <td id="statCount">0</td>
-                <td id="statAverage">-</td>
-                <td id="statMin">-</td>
-                <td id="statMax">-</td>
-            </tr>
-        </tbody>
-    </table>
-</div>
+};
 
-</div>
+const app =
+ initializeApp(firebaseConfig);
 
-<script>
+const db =
+  getFirestore(app);
+  let currentRound = 1;
+  let acceptAnswers = true;
+  let roundStartedAt = 0;
+  let roundLength = 30;
 
-let playerGuess = null;
-let audienceGuesses = [];
+onSnapshot(
+  doc(db,"Games","current"),
+  
+  (snapshot) => {
 
-function savePlayer() {
+    const data = snapshot.data();
 
-    playerGuess =
-        Number(document.getElementById("playerGuess").value);
+    roundStartedAt =
+    data.roundStartedAt || 0;
 
-    document.getElementById("playerDisplay").textContent =
-        playerGuess;
+    roundLength =
+    data.roundLength || 30;
+
+    currentRound = data.round;
+    const answeredRound =
+    
+    localStorage.getItem("answeredRound");
+
+    if(answeredRound != currentRound){
+
+      document
+        .getElementById("guess")
+        .style.display = "inline";
+
+      document
+        .getElementById("sendBtn")
+        .style.display = "inline";
+
+      document
+        .getElementById("guess")
+        .value = "";
+
+      document
+        .getElementById("status")
+        .innerHTML = "";
+
+      document
+        .getElementById("guess")
+        .disabled = false;
+
+      document
+        .getElementById("sendBtn")
+        .disabled = false;
+    }
+
+    document
+      .getElementById("question")
+      .innerText =
+      data.title;
+
+    acceptAnswers =
+      data.acceptAnswers;
+
+    document
+      .getElementById("openStatus")
+      .innerText =
+      acceptAnswers
+      ? "✅ Afstemning åben"
+      : "⛔ Afstemning lukket";
+
+  }
+);
+
+document
+ .getElementById("sendBtn")
+ .addEventListener(
+ "click",
+ async ()=>{
+ const answeredRound =
+  localStorage.getItem("answeredRound");
+
+if(answeredRound == currentRound){
+
+  document
+    .getElementById("status")
+    .innerHTML =
+    "✅ Du har allerede svaret i denne runde";
+
+    document
+      .getElementById("sendBtn")
+      .disabled = false;
+  return;
 }
 
-function submitAudience() {
+
 
     const value =
-        Number(document.getElementById("audienceGuess").value);
+      Number(
+        document
+        .getElementById("guess")
+        .value
+      );
 
-    if (!isNaN(value) && value > 0) {
-        audienceGuesses.push(value);
+      if (!acceptAnswers) {
 
-        document.getElementById("count").textContent =
-            audienceGuesses.length;
+  document
+    .getElementById("status")
+    .innerHTML =
+    "⛔ Afstemningen er lukket";
 
-        updateStats();
-
-        document.getElementById("audienceGuess").value = "";
-    }
+  return;
 }
 
-function updateStats() {
+ const gameSnapshot =
+  await getDoc(
+    doc(db,"Games","current")
+  );
 
-    if (audienceGuesses.length === 0) return;
+const roundNumber =
+  gameSnapshot.data().round;
 
-    const avg =
-        audienceGuesses.reduce((a,b)=>a+b,0)
-        / audienceGuesses.length;
 
-    const min =
-        Math.min(...audienceGuesses);
 
-    const max =
-        Math.max(...audienceGuesses);
+await addDoc(
+  collection(db,"guesses"),
+  {
+    value:value,
+    round:roundNumber,
+    timestamp:Date.now()
+  }
+);
 
-    document.getElementById("statCount").textContent =
-        audienceGuesses.length;
+localStorage.setItem(
+  "answeredRound",
+  currentRound
+);
 
-    document.getElementById("statAverage").textContent =
-        avg.toFixed(1);
 
-    document.getElementById("statMin").textContent =
-        min;
+    document
+     .getElementById("status")
+     .innerHTML =
+      "<h2>🎉 Tak for dit svar!</h2><p>Du er nu med i konkurrencen.</p>";
 
-    document.getElementById("statMax").textContent =
-        max;
-}
+     document
+    .getElementById("guess")
+    .style.display = "none";
 
-function calculateWinner() {
+    document
+    .getElementById("sendBtn")
+    .style.display = "none";
+ });
 
-    const actual =
-        Number(document.getElementById("actualResult").value);
+setInterval(()=>{
 
-    if (
-        playerGuess === null ||
-        audienceGuesses.length === 0 ||
-        isNaN(actual)
-    ) {
-        alert("Mangler data");
-        return;
+  if(!roundStartedAt){
+    return;
+  }
+
+  const elapsed =
+    (Date.now() - roundStartedAt)
+    / 1000;
+
+  const remaining =
+    Math.max(
+      0,
+      Math.ceil(
+        roundLength - elapsed
+      )
+    );
+
+  document
+    .getElementById("timer")
+    .innerText =
+    remaining + " sek";
+  
+    if(remaining <= 0){
+
+      document
+        .getElementById("sendBtn")
+        .disabled = true;
+
+      document
+        .getElementById("guess")
+        .disabled = true;
+  
+
     }
-
-    const average =
-        audienceGuesses.reduce((a,b)=>a+b,0)
-        / audienceGuesses.length;
-
-    const playerDistance =
-        Math.abs(playerGuess - actual);
-
-    const audienceDistance =
-        Math.abs(average - actual);
-
-    let winner;
-
-    if (playerDistance < audienceDistance) {
-        winner = "🧍 DELTAGEREN";
-    }
-    else if (audienceDistance < playerDistance) {
-        winner = "👥 PUBLIKUM";
-    }
-    else {
-        winner = "🤝 UAFGJORT";
-    }
-
-    document.getElementById("results").innerHTML = `
-        <p class="stat">
-            Faktisk resultat:
-            <strong>${actual}</strong>
-        </p>
-
-        <p class="stat">
-            Publikumsgennemsnit:
-            <strong>${average.toFixed(1)}</strong>
-        </p>
-
-        <p class="stat">
-            Deltagerens gæt:
-            <strong>${playerGuess}</strong>
-        </p>
-
-        <p class="stat">
-            Deltager afvigelse:
-            <strong>${playerDistance.toFixed(1)}</strong>
-        </p>
-
-        <p class="stat">
-            Publikum afvigelse:
-            <strong>${audienceDistance.toFixed(1)}</strong>
-        </p>
-
-        <p class="winner">${winner} VINDER!</p>
-    `;
-}
+} ,250);
 
 </script>
 
