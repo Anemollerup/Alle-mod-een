@@ -312,6 +312,50 @@ function drawHistogram(values){
 }
 
 setInterval(()=>{
+  if(currentRound === 0){
+
+  document
+    .getElementById("question")
+    .innerText =
+    "Alle mod En";
+
+  document
+    .getElementById("timer")
+    .style.display =
+    "none";
+
+  document
+    .getElementById("count")
+    .style.display =
+    "none";
+
+  document
+    .getElementById("results")
+    .style.display =
+    "none";
+
+  document
+    .getElementById("histogram")
+    .style.display =
+    "none";
+
+  return;
+}
+
+document
+  .getElementById("timer")
+  .style.display =
+  "block";
+
+document
+  .getElementById("count")
+  .style.display =
+  "block";
+
+document
+  .getElementById("results")
+  .style.display =
+  "block";
 
   if(!roundStartedAt){
     return;
