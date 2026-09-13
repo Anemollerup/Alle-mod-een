@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+<meta charset="UTF-8">
+<title>Storskærm</title>
+
+<style>
+
+body{
+    font-family: Arial, sans-serif;
+    text-align:center;
+    padding:40px;
+}
+
+#question{
+    font-size:48px;
+    font-weight:bold;
+}
+
+#count{
+    font-size:60px;
+    color:#005a9c;
+}
+
+.bar{
+    background:#005a9c;
+    height:24px;
+    margin:6px;
+}
+
+.row{
+    display:flex;
+    align-items:center;
+    gap:10px;
+}
+
+.label{
+    width:120px;
+    text-align:right;
+}
+
+#timer{
+    font-size:72px;
+    color:#d83b01;
+    margin:20px 0;
+}
+
+</style>
+</head>
+
+<script type="module">
+
+import { initializeApp }
+from "https://www.gstatic.com/firebasejs/12.2.1/firebase-app.js";
+
+import {
+ getFirestore,
+ collection,
+ onSnapshot,
+ doc
+}
+from "https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js";
+
+const firebaseConfig = {
+
+ apiKey: "GFD3K4mE3uLxfVnTOKfz9KU8HuPMVrY",
+
+ authDomain:
+ "alle-mod-en.firebaseapp.com",
+
+ projectId:
+ "alle-mod-en",
+
+ storageBucket:
+ "alle-mod-en.firebasestorage.app",
+
+ messagingSenderId:
+ "982698004873",
+
+ appId:
+ "1:982698004873:web:6d0494926004041fae1158"
+};
+
+const app =
+ initializeApp(firebaseConfig);
+
+const db =
+ getFirestore(app);
+
+let currentRound = 1;
+let roundStartedAt = 0;
+let roundLength = 30;
+let minGuess = 0;
+let maxGuess = 0;
+let playerGuess = 0;
+let averageGuess = 0;
+let showAverage = false;
+let actualResult = 0;
+let showActual = false;
+let previousRound = 0;
+
+
+onSnapshot(
+ doc(db,"Games","current"),
+(snapshot)=>{
+
+ const data =
+   snapshot.data();
+ 
+ playerGuess =
+  data.playerGuess ?? 0;
+
+ showAverage =
+  data.showAverage ?? false;
+
+ actualResult =
+  data.actualResult ?? 0;
+
+ showActual =
+  data.showActual ?? false;
+
+currentRound =
+   data.round;
+
+   if(currentRound !== previousRound){
+
+  document
+    .getElementById("count")
+    .innerText = "0";
+
+  document
+    .getElementById("histogram")
+    .innerHTML = "";
+
+  document
+    .getElementById("histogram")
+    .style.display = "none";
+
+  previousRound = currentRound;
+}
+
+ roundStartedAt =
+   data.roundStartedAt || 0;
+
+ roundLength =
+   data.roundLength || 30;
+
+if(currentRound === 0){
+
+  document
+    .getElementById("question")
+    .innerText =
+    "Alle mod En";
+
+}
+else{
+
+  document
+    .getElementById("question")
+    .innerText =
+    data.title;
+
+}
+
+if(currentRound === 0){
+
+  document
+    .getElementById("timer")
+    .style.display = "none";
+
+  document
+    .getElementById("count")
+    .style.display = "none";
+
+  document
+    .getElementById("results")
+    .style.display = "none";
+
+  document
+    .getElementById("histogram")
+    .style.display = "none";
+
+}
+else{
+
+  document
+    .getElementById("timer")
+    .style.display = "block";
+
+  document
+    .getElementById("count")
+    .style.display = "block";
+
+  document
+    .getElementById("results")
+    .style.display = "block";
+
+}
+
+if(currentRound > 0){
+
+  document
+    .getElementById("results")
+    .innerHTML =
+    `
+    <h2>Deltagerens gæt</h2>
+    <h1>${data.playerGuess}</h1>
+    `;
+
+}
+
+});
+
+onSnapshot(
+ collection(db,"guesses"),
+ (snapshot)=>{
+
+   const values = [];
+
+   snapshot.forEach(docItem=>{
+
+     const data =
+       docItem.data();
+
+     if(data.round === currentRound){
+
+       values.push(
+         Number(data.value)
+       );
+
+     }
+
+   });
+
+   document
+     .getElementById("count")
+     .innerText =
+     values.length;
+
+   drawHistogram(values);
+
+   if(values.length > 0){
+
+      minGuess =
+        Math.min(...values);
+
+      maxGuess =
+        Math.max(...values);
+
+      averageGuess =
+        values.reduce(
+          (a,b)=>a+b,
+          0
+          ) / values.length;
+
+    }
+
+ });
+
+function drawHistogram(values){
+
+ const histogram =
+ document.getElementById("histogram");
+
+ histogram.innerHTML = "";
+
+ if(values.length === 0) return;
+
+ const bucketSize = 10;
+
+ const buckets = {};
+
+ values.forEach(v=>{
+
+   const bucket =
+   Math.floor(v/bucketSize)
+   * bucketSize;
+
+   buckets[bucket] =
+   (buckets[bucket] || 0) + 1;
+
+ });
+
+ Object.keys(buckets)
+ .sort((a,b)=>a-b)
+ .forEach(bucket=>{
+
+   const count =
+   buckets[bucket];
+
+   histogram.innerHTML += `
+
+     <div class="row">
+
+       <div class="label">
+
+       ${bucket}-${Number(bucket)+9}
+
+       </div>
+
+       <div
+         class="bar"
+         style="
+           width:${count*15}px;
+         ">
+       </div>
+
+       <div>${count}</div>
+
+     </div>
+
+   `;
+
+ });
+
+}
+
+setInterval(()=>{
+  if(currentRound === 0){
+
+  document
+    .getElementById("question")
+    .innerText =
+    "Alle mod En";
+
+  document
+    .getElementById("timer")
+    .style.display =
+    "none";
+
+  document
+    .getElementById("count")
+    .style.display =
+    "none";
+
+  document
+    .getElementById("results")
+    .style.display =
+    "none";
+
+  document
+    .getElementById("histogram")
+    .style.display =
+    "none";
+
+  document
+  .getElementById("countHeader")
+  .style.display = "none";
+
+  return;
+}
+
+else{
+document
+  .getElementById("timer")
+  .style.display =
+  "block";
+
+document
+  .getElementById("count")
+  .style.display =
+  "block";
+
+document
+  .getElementById("results")
+  .style.display =
+  "block";
+
+document
+  .getElementById("countHeader")
+  .style.display = "block";
+}
+
+  if(!roundStartedAt){
+    return;
+  }
+
+  const elapsed =
+    (Date.now() - roundStartedAt) / 1000;
+
+  const remaining =
+    Math.max(
+      0,
+      Math.ceil(
+        roundLength - elapsed
+      )
+    );
+
+  if(remaining <= 0){
+
+  document
+    .getElementById("timer")
+    .innerText =
+    "⏰ Tiden er udløbet";
+
+  document
+    .getElementById("histogram")
+    .style.display =
+    "block";
+    
+  document
+    .getElementById("results")
+    .innerHTML = `
+
+      <h2>
+      Deltagerens gæt:
+      ${playerGuess}
+      </h2>
+
+      <h2>
+      Laveste gæt:
+      ${minGuess}
+      </h2>
+
+      <h2>
+      Højeste gæt:
+      ${maxGuess}
+      </h2>
+
+    `;
+      if(showAverage){
+
+      document
+        .getElementById("results")
+        .innerHTML += `
+
+      <h2>
+      Publikums gennemsnit:
+      ${averageGuess.toFixed(1)}
+      </h2>
+
+      `;
+
+  }
+
+  }
+  else{
+
+    document
+      .getElementById("timer")
+      .innerText =
+      remaining + " sek";
+
+    document
+      .getElementById("histogram")
+      .style.display =
+      "none";
+
+  }
+
+
+
+  if(showActual){
+
+      const audienceDistance =
+        Math.abs(
+        averageGuess -
+        actualResult
+        );
+
+      const playerDistance =
+        Math.abs(
+        playerGuess -
+        actualResult
+        );
+
+      const winner =
+        audienceDistance <
+        playerDistance
+        ? "👥 PUBLIKUM"
+        : "🧍 DELTAGEREN";
+
+      document
+        .getElementById("results")
+        .innerHTML += `
+
+      <h2>
+      Faktisk resultat:
+      ${actualResult}
+      </h2>
+
+      <h1>
+      ${winner} VINDER
+      </h1>
+
+      `;
+  }
+
+
+}, 250);
+
+
+
+
+</script>
+
+<body>
+
+<h1 id="question">ALLE MOD EN</h1>
+
+<h1 id="timer">30 sek</h1>
+
+
+<h2 id="countHeader">Svar modtaget</h2>
+
+<div id="count">0</div>
+
+<hr>
+
+<div id="results"></div>
+
+
+<div id="histogram" style="display:none;"></div>
