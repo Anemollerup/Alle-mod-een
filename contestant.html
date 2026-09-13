@@ -37,7 +37,7 @@ import {
  doc,
  onSnapshot,
  query,
- getDoc
+ getDoc,
  updateDoc
 }
 from "https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js";
@@ -164,9 +164,6 @@ document
   await getDoc(
     doc(db,"Games","current")
   );
-
-const roundNumber =
-  gameSnapshot.data().round;
 
 
 await updateDoc(

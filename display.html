@@ -343,9 +343,14 @@ setInterval(()=>{
     .style.display =
     "none";
 
+  document
+  .getElementById("countHeader")
+  .style.display = "none";
+
   return;
 }
 
+else{
 document
   .getElementById("timer")
   .style.display =
@@ -360,6 +365,11 @@ document
   .getElementById("results")
   .style.display =
   "block";
+
+document
+  .getElementById("countHeader")
+  .style.display = "block";
+}
 
   if(!roundStartedAt){
     return;
@@ -491,7 +501,7 @@ document
 <h1 id="timer">30 sek</h1>
 
 
-<h2>Svar modtaget</h2>
+<h2 id="countHeader">Svar modtaget</h2>
 
 <div id="count">0</div>
 
