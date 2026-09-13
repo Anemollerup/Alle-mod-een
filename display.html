@@ -10,22 +10,48 @@ body{
     font-family: Arial, sans-serif;
     text-align:center;
     padding:40px;
+    
+    min-height:100vh;
+
+    background:
+      linear-gradient(
+        180deg,
+        #f2f8ff,
+        #d9ecff
+      );
+}
+
+#card{
+    background:white;
+
+    max-width:1200px;
+
+    margin:auto;
+
+    padding:40px;
+
+    border-radius:20px;
+
+    box-shadow:
+      0 10px 30px rgba(0,0,0,0.15);
 }
 
 #question{
     font-size:48px;
     font-weight:bold;
+    color:#003366;
 }
 
 #count{
-    font-size:60px;
+    font-size:60px; 
     color:#005a9c;
 }
 
 .bar{
-    background:#005a9c;
+    background:#0078d4;
     height:24px;
     margin:6px;
+    border-radius:12px;
 }
 
 .row{
@@ -41,8 +67,13 @@ body{
 
 #timer{
     font-size:72px;
-    color:#d83b01;
+    color:#005a9c;
+    font-weight:bold;
     margin:20px 0;
+}
+
+#countHeader{
+    color:#003366;
 }
 
 </style>
@@ -496,10 +527,11 @@ document
 
 <body>
 
+<div id="card"></div>
+
 <h1 id="question">ALLE MOD EN</h1>
 
 <h1 id="timer">30 sek</h1>
-
 
 <h2 id="countHeader">Svar modtaget</h2>
 
@@ -509,5 +541,8 @@ document
 
 <div id="results"></div>
 
-
 <div id="histogram" style="display:none;"></div>
+
+</div>
+
+<body>
