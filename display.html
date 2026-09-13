@@ -145,10 +145,57 @@ onSnapshot(
  roundLength =
    data.roundLength || 30;
 
- document
-   .getElementById("question")
-   .innerText =
-   data.title;
+if(currentRound === 0){
+
+  document
+    .getElementById("question")
+    .innerText =
+    "Alle mod En";
+
+}
+else{
+
+  document
+    .getElementById("question")
+    .innerText =
+    data.title;
+
+}
+
+if(currentRound === 0){
+
+  document
+    .getElementById("timer")
+    .style.display = "none";
+
+  document
+    .getElementById("count")
+    .style.display = "none";
+
+  document
+    .getElementById("results")
+    .style.display = "none";
+
+  document
+    .getElementById("histogram")
+    .style.display = "none";
+
+}
+else{
+
+  document
+    .getElementById("timer")
+    .style.display = "block";
+
+  document
+    .getElementById("count")
+    .style.display = "block";
+
+  document
+    .getElementById("results")
+    .style.display = "block";
+
+}
 
 document
   .getElementById("results")
@@ -391,7 +438,7 @@ setInterval(()=>{
 
 <body>
 
-<h1 id="question">Indlæser...</h1>
+<h1 id="question">ALLE MOD EN</h1>
 
 <h1 id="timer">30 sek</h1>
 
