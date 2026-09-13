@@ -20,6 +20,10 @@
 Start ny runde
 </button>
 
+<input id="rangeMin" type="number" value="0">
+
+<input id="rangeMax" type="number" value="200">
+
 <br><br>
 
 
@@ -131,6 +135,17 @@ document
     .getElementById("questionInput")
     .value;
 
+  const rangeMin =
+    Number(
+      document.getElementById("rangeMin").value
+    );
+
+  const rangeMax =
+    Number(
+      document.getElementById("rangeMax").value
+    );
+
+
 await updateDoc(
   doc(db,"Games","current"),
   {
@@ -139,6 +154,9 @@ await updateDoc(
       round: increment(1),
       roundStartedAt: Date.now(),
       roundLength: 30,
+
+      rangeMin: rangeMin,
+      rangeMax: rangeMax,
 
       playerGuess:0,
       actualResult:0,
