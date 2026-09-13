@@ -87,11 +87,6 @@ onSnapshot(
     data.roundLength || 30;
 
     currentRound = data.round;
-    const answeredRound =
-    
-    localStorage.getItem("answeredRound");
-
-    if(answeredRound != currentRound){
 
       document
         .getElementById("openStatus")
@@ -121,7 +116,7 @@ onSnapshot(
       document
         .getElementById("sendBtn")
         .disabled = false;
-    }
+
 
     document
       .getElementById("question")
@@ -173,11 +168,6 @@ await updateDoc(
   }
 );
 
-
-localStorage.setItem(
-  "answeredRound",
-  currentRound
-);
 
 
     document
