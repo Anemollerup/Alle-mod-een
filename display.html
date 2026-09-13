@@ -108,19 +108,19 @@ onSnapshot(
    snapshot.data();
  
  playerGuess =
-  data.playerGuess || 0;
+  data.playerGuess ?? 0;
 
  showAverage =
-  data.showAverage || false;
+  data.showAverage ?? false;
 
  actualResult =
-  data.actualResult || 0;
+  data.actualResult ?? 0;
 
  showActual =
-  data.showActual || false;
+  data.showActual ?? false;
 
- currentRound =
-   data.round || 1;
+currentRound =
+   data.round;
 
    if(currentRound !== previousRound){
 
@@ -197,13 +197,17 @@ else{
 
 }
 
-document
-  .getElementById("results")
-  .innerHTML =
-  `
-  <h2>Deltagerens gæt</h2>
-  <h1>${data.playerGuess}</h1>
-  `;
+if(currentRound > 0){
+
+  document
+    .getElementById("results")
+    .innerHTML =
+    `
+    <h2>Deltagerens gæt</h2>
+    <h1>${data.playerGuess}</h1>
+    `;
+
+}
 
 });
 
