@@ -171,33 +171,6 @@ await updateDoc(
 
  });
 
-
- "click",
- async ()=>{
-
-  await updateDoc(
-    doc(db,"Games","current"),
-    {
-      acceptAnswers:true
-    }
-  );
-
- };
-
-
- "click",
- async ()=>{
-
-  await updateDoc(
-    doc(db,"Games","current"),
-    {
-      acceptAnswers:false
-    }
-  );
-
- };
-
-
  document
  .getElementById("showAverageBtn")
  .addEventListener(
