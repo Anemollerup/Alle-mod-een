@@ -86,50 +86,54 @@ onSnapshot(
     data.roundLength || 30;
 
     currentRound = data.round;
-    const answeredRound=localStorage.getItem("answeredRound");
 
-    if(answeredRound != currentRound){
+const elapsed =
+  (Date.now() - data.roundStartedAt) / 1000;
 
-      document
-        .getElementById("openStatus")
-        .innerText =
-        "✅ Afstemning åben";
+const remaining =
+  Math.max(
+    0,
+    Math.ceil(data.roundLength - elapsed)
+  );
 
-      document
-        .getElementById("guess")
-        .style.display = "inline";
+const roundOpen =
+  data.acceptAnswers && remaining > 0;
 
-      document
-        .getElementById("sendBtn")
-        .style.display = "inline";
+document.getElementById("guess").disabled =
+  !roundOpen;
 
-      document
-        .getElementById("guess")
-        .value = "";
+document.getElementById("sendBtn").disabled =
+  !roundOpen;
 
-      document
-        .getElementById("status")
-        .innerHTML = "";
-
-      document
-        .getElementById("guess")
-        .disabled = false;
-
-      document
-        .getElementById("sendBtn")
-        .disabled = false;
-    }
-
-    document
-      .getElementById("question")
-      .innerText =
-      data.title;
-
-    acceptAnswers =
-      data.acceptAnswers;
+document.getElementById("openStatus").innerText =
+  roundOpen
+    ? "✅ Afstemning åben"
+    : "⛔ Afstemning lukket";
 
 
+document
+  .getElementById("guess")
+  .style.display = "inline";
 
+document
+  .getElementById("sendBtn")
+  .style.display = "inline";
+
+document
+  .getElementById("guess")
+  .value = "";
+
+document
+  .getElementById("status")
+  .innerHTML = "";
+
+document
+  .getElementById("question")
+  .innerText =
+  data.title;
+
+acceptAnswers =
+  data.acceptAnswers;
   }
 );
 
@@ -150,7 +154,7 @@ if(answeredRound == currentRound){
 
     document
       .getElementById("sendBtn")
-      .disabled = false;
+      .disabled = true;
   return;
 }
 
@@ -181,7 +185,17 @@ if(answeredRound == currentRound){
 const roundNumber =
   gameSnapshot.data().round;
 
+const elapsed =
+  (Date.now() - roundStartedAt) / 1000;
 
+if(elapsed >= roundLength){
+  document
+    .getElementById("status")
+    .innerHTML =
+    "⛔ Tiden er udløbet";
+
+  return;
+}
 
 await addDoc(
   collection(db,"guesses"),
