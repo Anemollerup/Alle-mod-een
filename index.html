@@ -132,10 +132,10 @@ onSnapshot(
    const data =
      snapshot.data();
 
-   const rangeMin =
+   rangeMin =
     data.rangeMin ?? 0;
 
-   const rangeMax =
+   rangeMax =
     data.rangeMax ?? 0;
 
    currentRound =
@@ -159,7 +159,6 @@ onSnapshot(
     .getElementById("rangeText")
     .innerText =
     `Gæt mellem ${rangeMin} og ${rangeMax}`;
-    ``
   
 
    if(currentRound !== previousRound){
