@@ -68,10 +68,22 @@ const app =
 const db =
   getFirestore(app);
   let currentRound = 1;
-  let acceptAnswers = true;
   let roundStartedAt = 0;
   let roundLength = 30;
-  let previousRound = 0;
+
+  let minGuess = 0;
+  let maxGuess = 0;
+
+  let playerGuess = 0;
+  let averageGuess = 0;
+
+  let showAverage = false;
+
+  let actualResult = 0;
+  let showActual = false;
+
+  let rangeMin = 0;
+  let rangeMax = 200;
 
 onSnapshot(
   doc(db,"Games","current"),
@@ -206,7 +218,7 @@ if(elapsed >= roundLength){
 }
 
 await addDoc(
-  collection(db,"guesses"),
+  collection(db,"Guesses"),
   {
     value:value,
     round:roundNumber,
