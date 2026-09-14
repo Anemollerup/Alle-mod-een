@@ -70,6 +70,61 @@ body{
     font-weight:bold;
 }
 
+#scoreBarContainer{
+
+    width:900px;
+
+    margin:40px auto;
+}
+
+#scoreScale{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    font-weight:bold;
+
+    font-size:20px;
+
+    margin-bottom:10px;
+}
+
+#scoreBar{
+
+    position:relative;
+
+    height:10px;
+
+    background:#cccccc;
+
+    border-radius:10px;
+}
+
+.marker{
+
+    position:absolute;
+
+    top:-8px;
+
+    width:24px;
+
+    height:24px;
+
+    border-radius:50%;
+
+    transform:translateX(-50%);
+}
+
+#scoreLegend{
+
+    margin-top:30px;
+
+    font-size:22px;
+
+    line-height:1.8;
+}
+
 </style>
 
 </head>
@@ -109,9 +164,33 @@ Svar modtaget
 <div id="results">
 </div>
 
+<div id="scoreBarContainer"
+     style="display:none;">
+
+    <div id="scoreScale">
+
+        <span id="rangeMinLabel">
+            0
+        </span>
+
+        <span id="rangeMaxLabel">
+            200
+        </span>
+
+    </div>
+
+    <div id="scoreBar">
+    </div>
+
+    <div id="scoreLegend">
+    </div>
+
+</div>
+
 <div id="histogram"
      style="display:none;">
 </div>
+
 
 </div>
 
@@ -169,12 +248,31 @@ let averageGuess = 0;
 let minGuess = 0;
 let maxGuess = 0;
 
+let rangeMin = 0;
+let rangeMax = 200;
+
 onSnapshot(
  doc(db,"Games","current"),
  snapshot => {
 
    const data =
      snapshot.data();
+
+    rangeMin =
+    data.rangeMin ?? 0;
+
+    rangeMax =
+    data.rangeMax ?? 200;
+
+    document
+    .getElementById("rangeMinLabel")
+    .innerText =
+    rangeMin;
+
+    document
+    .getElementById("rangeMaxLabel")
+    .innerText =
+    rangeMax;
 
    currentRound =
      data.round || 0;
@@ -326,6 +424,108 @@ function drawHistogram(values){
 
 }
 
+function drawScoreBar(){
+
+    const scoreBar =
+      document.getElementById("scoreBar");
+
+    const scoreLegend =
+      document.getElementById("scoreLegend");
+
+    scoreBar.innerHTML = "";
+
+    scoreLegend.innerHTML = "";
+
+    const size =
+      rangeMax - rangeMin;
+
+    const minPos =
+      ((minGuess-rangeMin)/size)*100;
+
+    const maxPos =
+      ((maxGuess-rangeMin)/size)*100;
+
+    const playerPos =
+      ((playerGuess-rangeMin)/size)*100;
+
+    scoreBar.innerHTML += `
+
+        <div class="marker"
+             style="
+                left:${minPos}%;
+                background:red;
+             ">
+        </div>
+
+        <div class="marker"
+             style="
+                left:${maxPos}%;
+                background:purple;
+             ">
+        </div>
+
+        <div class="marker"
+             style="
+                left:${playerPos}%;
+                background:orange;
+             ">
+        </div>
+
+    `;
+
+    scoreLegend.innerHTML +=
+      `🔴 Min (${minGuess})<br>`;
+
+    scoreLegend.innerHTML +=
+      `🟣 Max (${maxGuess})<br>`;
+
+    scoreLegend.innerHTML +=
+      `🟠 Deltager (${playerGuess})<br>`;
+
+    if(showAverage){
+
+        const avgPos =
+          ((averageGuess-rangeMin)/size)
+          *100;
+
+        scoreBar.innerHTML += `
+
+            <div class="marker"
+                 style="
+                    left:${avgPos}%;
+                    background:blue;
+                 ">
+            </div>
+
+        `;
+
+        scoreLegend.innerHTML +=
+          `🔵 Publikum (${averageGuess.toFixed(1)})<br>`;
+    }
+
+    if(showActual){
+
+        const actualPos =
+          ((actualResult-rangeMin)/size)
+          *100;
+
+        scoreBar.innerHTML += `
+
+            <div class="marker"
+                 style="
+                    left:${actualPos}%;
+                    background:green;
+                 ">
+            </div>
+
+        `;
+
+        scoreLegend.innerHTML +=
+          `🟢 Resultat (${actualResult})<br>`;
+    }
+
+}
+
 setInterval(()=>{
 
   if(currentRound === 0){
@@ -356,6 +556,11 @@ setInterval(()=>{
        .style.display =
        "none";
 
+       document
+        .getElementById("scoreBarContainer")
+        .style.display =
+        "none";
+
   }
   else{
 
@@ -368,6 +573,13 @@ setInterval(()=>{
        .getElementById("histogram")
        .style.display =
        "block";
+
+       document
+        .getElementById("scoreBarContainer")
+        .style.display =
+        "block";
+
+        drawScoreBar();
 
       let html = `
       <h2>Deltagerens gæt: ${playerGuess}</h2>
