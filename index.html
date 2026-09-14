@@ -1,8 +1,45 @@
 <!DOCTYPE html>
 <html lang="da">
 <head>
-  <meta charset="UTF-8">
-  <title>Alle mod En</title>
+<meta charset="UTF-8">
+<title>Alle mod En</title>
+
+<style>
+body{
+    font-family: Arial, sans-serif;
+    text-align:center;
+    padding:40px;
+    background:#f6f8fb;
+}
+
+#question{
+    font-size:40px;
+    color:#005a9c;
+}
+
+#timer{
+    font-size:60px;
+    color:#005a9c;
+    font-weight:bold;
+}
+
+input{
+    font-size:24px;
+    padding:10px;
+    width:180px;
+}
+
+button{
+    font-size:24px;
+    padding:10px 20px;
+    margin-left:10px;
+}
+
+#openStatus{
+    font-size:24px;
+    font-weight:bold;
+}
+</style>
 </head>
 
 <body>
@@ -10,8 +47,10 @@
 <h1 id="question">Indlæser spørgsmål...</h1>
 
 <p id="openStatus">
-Afstemning åben
+✅ Afstemning åben
 </p>
+
+<h2 id="timer">30 sek</h2>
 
 <input id="guess" type="number">
 
@@ -20,10 +59,6 @@ Send svar
 </button>
 
 <p id="status"></p>
-
-<h2 id="timer">
-      30
-</h2>
 
 <script type="module">
 
@@ -36,7 +71,6 @@ import {
  addDoc,
  doc,
  onSnapshot,
- query,
  getDoc
 }
 from "https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js";
@@ -66,229 +100,217 @@ const app =
  initializeApp(firebaseConfig);
 
 const db =
-  getFirestore(app);
-  let currentRound = 1;
-  let roundStartedAt = 0;
-  let roundLength = 30;
+ getFirestore(app);
 
-  let minGuess = 0;
-  let maxGuess = 0;
+let currentRound = 0;
+let previousRound = -1;
 
-  let playerGuess = 0;
-  let averageGuess = 0;
+let roundStartedAt = 0;
+let roundLength = 30;
 
-  let showAverage = false;
-
-  let actualResult = 0;
-  let showActual = false;
-
-  let rangeMin = 0;
-  let rangeMax = 200;
+let acceptAnswers = true;
 
 onSnapshot(
-  doc(db,"Games","current"),
-  
-  (snapshot) => {
+ doc(db,"Games","current"),
+ (snapshot)=>{
 
-    if(currentRound !== previousRound){
+   const data =
+     snapshot.data();
 
-      localStorage.removeItem("answeredRound");
+   currentRound =
+     data.round;
 
-      previousRound = currentRound;
-    }
+   roundStartedAt =
+     data.roundStartedAt || 0;
 
-    const data = snapshot.data();
+   roundLength =
+     data.roundLength || 30;
 
-    roundStartedAt =
-    data.roundStartedAt || 0;
+   acceptAnswers =
+     data.acceptAnswers;
 
-    roundLength =
-    data.roundLength || 30;
+   document
+     .getElementById("question")
+     .innerText =
+     data.title;
 
-    currentRound = data.round;
+   if(currentRound !== previousRound){
 
-const elapsed =
-  (Date.now() - data.roundStartedAt) / 1000;
+      localStorage.removeItem(
+        "answeredRound"
+      );
 
-const remaining =
-  Math.max(
-    0,
-    Math.ceil(data.roundLength - elapsed)
-  );
+      document
+        .getElementById("guess")
+        .value = "";
 
-const roundOpen =
-  data.acceptAnswers && remaining > 0;
+      document
+        .getElementById("status")
+        .innerHTML = "";
 
-document.getElementById("guess").disabled =
-  !roundOpen;
+      document
+        .getElementById("guess")
+        .style.display =
+        "inline";
 
-document.getElementById("sendBtn").disabled =
-  !roundOpen;
+      document
+        .getElementById("sendBtn")
+        .style.display =
+        "inline";
 
-document.getElementById("openStatus").innerText =
-  roundOpen
-    ? "✅ Afstemning åben"
-    : "⛔ Afstemning lukket";
+      document
+        .getElementById("guess")
+        .disabled = false;
 
+      document
+        .getElementById("sendBtn")
+        .disabled = false;
 
-document
-  .getElementById("guess")
-  .style.display = "inline";
+      previousRound =
+        currentRound;
+   }
 
-document
-  .getElementById("sendBtn")
-  .style.display = "inline";
-
-document
-  .getElementById("guess")
-  .value = "";
-
-document
-  .getElementById("status")
-  .innerHTML = "";
-
-document
-  .getElementById("question")
-  .innerText =
-  data.title;
-
-acceptAnswers =
-  data.acceptAnswers;
-  }
-);
+ });
 
 document
  .getElementById("sendBtn")
  .addEventListener(
  "click",
  async ()=>{
- const answeredRound =
-  localStorage.getItem("answeredRound");
 
-if(answeredRound == currentRound){
+   const answeredRound =
+     localStorage.getItem(
+       "answeredRound"
+     );
 
-  document
-    .getElementById("status")
-    .innerHTML =
-    "✅ Du har allerede svaret i denne runde";
-
-    document
-      .getElementById("sendBtn")
-      .disabled = true;
-  return;
-}
-
-
-
-    const value =
-      Number(
-        document
-        .getElementById("guess")
-        .value
-      );
-
-      if (!acceptAnswers) {
-
-  document
-    .getElementById("status")
-    .innerHTML =
-    "⛔ Afstemningen er lukket";
-
-  return;
-}
-
- const gameSnapshot =
-  await getDoc(
-    doc(db,"Games","current")
-  );
-
-const roundNumber =
-  gameSnapshot.data().round;
-
-const elapsed =
-  (Date.now() - roundStartedAt) / 1000;
-
-if(elapsed >= roundLength){
-  document
-    .getElementById("status")
-    .innerHTML =
-    "⛔ Tiden er udløbet";
-
-  return;
-}
-
-await addDoc(
-  collection(db,"guesses"),
-  {
-    value:value,
-    round:roundNumber,
-    timestamp:Date.now()
-  }
-);
-
-localStorage.setItem(
-  "answeredRound",
-  currentRound
-);
-
-
-    document
-     .getElementById("status")
-     .innerHTML =
-      "<h2>🎉 Tak for dit svar!</h2><p>Du er nu med i konkurrencen.</p>";
+   if(answeredRound == currentRound){
 
      document
-    .getElementById("guess")
-    .style.display = "none";
+       .getElementById("status")
+       .innerHTML =
+       "✅ Du har allerede svaret i denne runde";
 
-    document
-    .getElementById("sendBtn")
-    .style.display = "none";
+     return;
+   }
+
+   const value =
+     Number(
+       document
+       .getElementById("guess")
+       .value
+     );
+
+   if(!value && value !== 0){
+
+      return;
+   }
+
+   const elapsed =
+     (Date.now() - roundStartedAt)
+     / 1000;
+
+   if(elapsed >= roundLength){
+
+      document
+        .getElementById("status")
+        .innerHTML =
+        "⛔ Tiden er udløbet";
+
+      return;
+   }
+
+   const gameSnapshot =
+     await getDoc(
+       doc(db,"Games","current")
+     );
+
+   const roundNumber =
+     gameSnapshot.data().round;
+
+   await addDoc(
+     collection(db,"guesses"),
+     {
+       value:value,
+       round:roundNumber,
+       timestamp:Date.now()
+     }
+   );
+
+   localStorage.setItem(
+     "answeredRound",
+     currentRound
+   );
+
+   document
+     .getElementById("status")
+     .innerHTML =
+     "<h2>🎉 Tak for dit svar!</h2>";
+
+   document
+     .getElementById("guess")
+     .style.display =
+     "none";
+
+   document
+     .getElementById("sendBtn")
+     .style.display =
+     "none";
+
  });
 
 setInterval(()=>{
 
-  if(!roundStartedAt){
-    return;
-  }
+   if(!roundStartedAt){
 
-  const elapsed =
-    (Date.now() - roundStartedAt)
-    / 1000;
+      return;
+   }
 
-  const remaining =
-    Math.max(
-      0,
-      Math.ceil(
-        roundLength - elapsed
-      )
-    );
+   const elapsed =
+     (Date.now() - roundStartedAt)
+     / 1000;
 
-  document
-    .getElementById("timer")
-    .innerText =
-    remaining + " sek";
-  
-    if(remaining <= 0){
+   const remaining =
+     Math.max(
+       0,
+       Math.ceil(
+         roundLength - elapsed
+       )
+     );
 
-      document
-        .getElementById("sendBtn")
-        .disabled = true;
+   document
+     .getElementById("timer")
+     .innerText =
+     remaining + " sek";
 
-      document
-        .getElementById("guess")
-        .disabled = true;
+   if(remaining > 0){
 
-      document
-        .getElementById("openStatus")
-        .innerText =
-        "⛔ Afstemning lukket";
-  
+     document
+       .getElementById("openStatus")
+       .innerText =
+       "✅ Afstemning åben";
 
-    }
-} ,250);
+   }
+   else{
+
+     document
+       .getElementById("openStatus")
+       .innerText =
+       "⛔ Afstemning lukket";
+
+     document
+       .getElementById("guess")
+       .disabled = true;
+
+     document
+       .getElementById("sendBtn")
+       .disabled = true;
+
+   }
+
+},250);
 
 </script>
 
 </body>
 </html>
+``
