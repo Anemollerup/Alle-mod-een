@@ -193,18 +193,12 @@ await updateDoc(
     document.getElementById("actualValue").value
    );
 
-  const playerGuess =
-   Number(
-    document.getElementById("playerGuess").value
-   );
-  
   await updateDoc(
-  doc(db,"Games","current"),
-  {
-    playerGuess: playerGuess,
-    showAverage: true
-  }
-);
+    doc(db,"Games","current"),
+    {
+      showAverage: true
+    }
+  );
 
   const gameSnapshot =
    await getDoc(
