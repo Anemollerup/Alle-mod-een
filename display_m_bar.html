@@ -503,7 +503,7 @@ document
 
       <h2>
       Højeste gæt:
-      ${maxGuess}
+      ${minGuess}
       </h2>
 
     `;
@@ -531,14 +531,51 @@ document
         background:red;">
       </div>
 
+
+      <div
+          style="
+          position:absolute;
+          left:${minPos}%;
+          top:-50px;
+          transform:translateX(-50%);
+          color:red;
+          font-weight:bold;
+          ">
+          minGuess
+      </div>
+
       <div class="marker"
         style="left:${playerPos}%;
         background:orange;">
       </div>
 
+      <div
+          style="
+          position:absolute;
+          left:${playerPos}%;
+          top:-50px;
+          transform:translateX(-50%);
+          color:orange;
+          font-weight:bold;
+          ">
+          minGuess
+      </div>
+
       <div class="marker"
         style="left:${avgPos}%;
       background:blue;">
+      </div>
+
+      <div
+          style="
+          position:absolute;
+          left:${avgPos}%;
+          top:-50px;
+          transform:translateX(-50%);
+          color:blue;
+          font-weight:bold;
+          ">
+          avgPos
       </div>
 
       `;
