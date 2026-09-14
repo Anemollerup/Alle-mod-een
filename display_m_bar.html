@@ -263,6 +263,7 @@ const db =
 let currentRound = 0;
 let roundStartedAt = 0;
 let roundLength = 60;
+let previousRound = 0;
 
 let playerGuess = 0;
 let actualResult = 0;
@@ -302,6 +303,27 @@ onSnapshot(
 
    currentRound =
      data.round ?? 0;
+
+    if(currentRound !== previousRound){
+        document
+        .getElementById("count")
+        .innerText = "0";
+
+        document
+        .getElementById("results")
+        .innerHTML = "";
+
+        document
+        .getElementById("histogram")
+        .style.display = "none";
+
+        document
+        .getElementById("scoreBarContainer")
+        .style.display = "none";
+
+        previousRound = currentRound;
+
+    }
 
    roundStartedAt =
      data.roundStartedAt || 0;
@@ -607,6 +629,10 @@ setInterval(()=>{
         .getElementById("scoreBarContainer")
         .style.display =
         "none";
+
+       document
+        .getElementById("results")
+        .innerHTML = "";
 
   }
   else{
