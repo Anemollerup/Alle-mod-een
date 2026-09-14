@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+
+<meta charset="UTF-8">
+<title>Alle Mod En</title>
+
+<style>
+
+body{
+    font-family: Arial, sans-serif;
+    background:#f5f7fa;
+    text-align:center;
+    margin:0;
+    padding:40px;
+}
+
+#welcome{
+    margin-top:150px;
+}
+
+#welcomeTitle{
+    font-size:120px;
+    color:#005a9c;
+    font-weight:900;
+}
+
+#welcomeSub{
+    font-size:42px;
+    color:#666;
+}
+
+#question{
+    font-size:48px;
+    font-weight:bold;
+    margin-bottom:30px;
+}
+
+#timer{
+    font-size:80px;
+    color:#d83b01;
+}
+
+#count{
+    font-size:60px;
+    color:#005a9c;
+    font-weight:bold;
+}
+
+#results{
+    margin-top:30px;
+}
+
+.bar{
+    background:#005a9c;
+    height:30px;
+}
+
+.row{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    margin:8px auto;
+    max-width:800px;
+}
+
+.label{
+    width:120px;
+    text-align:right;
+    font-weight:bold;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div id="welcome">
+
+<h1 id="welcomeTitle">
+ALLE MOD EN
+</h1>
+
+<h2 id="welcomeSub">
+Spildevand Plan & Projekt
+</h2>
+
+</div>
+
+<div id="game" style="display:none;">
+
+<h1 id="question">
+Indlæser spørgsmål...
+</h1>
+
+<div id="timer">
+30
+</div>
+
+<h2>
+Svar modtaget
+</h2>
+
+<div id="count">
+0
+</div>
+
+<div id="results">
+</div>
+
+<div id="histogram"
+     style="display:none;">
+</div>
+
+</div>
+
+<script type="module">
+
+import { initializeApp }
+from "https://www.gstatic.com/firebasejs/12.2.1/firebase-app.js";
+
+import {
+ getFirestore,
+ collection,
+ onSnapshot,
+ doc
+}
+from "https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js";
+
+const firebaseConfig = {
+
+ apiKey: "GFD3K4mE3uLxfVnTOKfz9KU8HuPMVrY",
+
+ authDomain:
+ "alle-mod-en.firebaseapp.com",
+
+ projectId:
+ "alle-mod-en",
+
+ storageBucket:
+ "alle-mod-en.firebasestorage.app",
+
+ messagingSenderId:
+ "982698004873",
+
+ appId:
+ "1:982698004873:web:6d0494926004041fae1158"
+
+};
+
+const app =
+ initializeApp(firebaseConfig);
+
+const db =
+ getFirestore(app);
+
+let currentRound = 0;
+let roundStartedAt = 0;
+let roundLength = 30;
+
+let playerGuess = 0;
+let actualResult = 0;
+
+let showAverage = false;
+let showActual = false;
+
+let averageGuess = 0;
+let minGuess = 0;
+let maxGuess = 0;
+
+onSnapshot(
+ doc(db,"Games","current"),
+ snapshot => {
+
+   const data =
+     snapshot.data();
+
+   currentRound =
+     data.round || 0;
+
+   roundStartedAt =
+     data.roundStartedAt || 0;
+
+   roundLength =
+     data.roundLength || 30;
+
+   playerGuess =
+     data.playerGuess || 0;
+
+   actualResult =
+     data.actualResult || 0;
+
+   showAverage =
+     data.showAverage || false;
+
+   showActual =
+     data.showActual || false;
+
+   if(currentRound === 0){
+
+      document
+       .getElementById("welcome")
+       .style.display = "block";
+
+      document
+       .getElementById("game")
+       .style.display = "none";
+
+   }
+   else{
+
+      document
+       .getElementById("welcome")
+       .style.display = "none";
+
+      document
+       .getElementById("game")
+       .style.display = "block";
+
+      document
+       .getElementById("question")
+       .innerText =
+       data.title;
+
+   }
+
+ });
+
+onSnapshot(
+ collection(db,"guesses"),
+ snapshot => {
+
+   let values = [];
+
+   snapshot.forEach(docItem => {
+
+      const data =
+       docItem.data();
+
+      if(data.round === currentRound){
+
+         values.push(
+           Number(data.value)
+         );
+
+      }
+
+   });
+
+   document
+    .getElementById("count")
+    .innerText =
+    values.length;
+
+   if(values.length > 0){
+
+      averageGuess =
+       values.reduce(
+         (a,b)=>a+b,
+         0
+       ) / values.length;
+
+      minGuess =
+       Math.min(...values);
+
+      maxGuess =
+       Math.max(...values);
+
+   }
+
+   drawHistogram(values);
+
+ });
+
+function drawHistogram(values){
+
+ const histogram =
+ document.getElementById("histogram");
+
+ histogram.innerHTML = "";
+
+ if(values.length === 0){
+    return;
+ }
+
+ const bucketSize = 10;
+ const buckets = {};
+
+ values.forEach(v => {
+
+   const bucket =
+     Math.floor(v / bucketSize)
+      * bucketSize;
+
+   buckets[bucket] =
+     (buckets[bucket] || 0) + 1;
+
+ });
+
+ Object.keys(buckets)
+ .sort((a,b)=>a-b)
+ .forEach(bucket => {
+
+   const count =
+     buckets[bucket];
+
+   histogram.innerHTML += `
+   <div class="row">
+
+      <div class="label">
+      ${bucket}-${Number(bucket)+9}
+      </div>
+
+      <div class="bar"
+           style="width:${count*25}px">
+      </div>
+
+      <div>
+      ${count}
+      </div>
+
+   </div>
+   `;
+ });
+
+}
+
+setInterval(()=>{
+
+  if(currentRound === 0){
+     return;
+  }
+
+  const remaining =
+    Math.max(
+      0,
+      Math.ceil(
+        roundLength -
+        (
+          Date.now()
+          - roundStartedAt
+        ) / 1000
+      )
+    );
+
+  if(remaining > 0){
+
+      document
+       .getElementById("timer")
+       .innerText =
+       remaining + " sek";
+
+      document
+       .getElementById("histogram")
+       .style.display =
+       "none";
+
+  }
+  else{
+
+      document
+       .getElementById("timer")
+       .innerText =
+       "⏰ Tiden er udløbet";
+
+      document
+       .getElementById("histogram")
+       .style.display =
+       "block";
+
+      let html = `
+      <h2>Deltagerens gæt: ${playerGuess}</h2>
+      <h2>Laveste gæt: ${minGuess}</h2>
+      <h2>Højeste gæt: ${maxGuess}</h2>
+      `;
+
+      if(showAverage){
+
+        html += `
+        <h2>
+        Publikums gennemsnit:
+        ${averageGuess.toFixed(1)}
+        </h2>
+        `;
+
+      }
+
+      if(showActual){
+
+        const audienceDistance =
+          Math.abs(
+            averageGuess -
+            actualResult
+          );
+
+        const playerDistance =
+          Math.abs(
+            playerGuess -
+            actualResult
+          );
+
+        const winner =
+          audienceDistance <
+          playerDistance
+          ? "👥 PUBLIKUM"
+          : "🧍 DELTAGEREN";
+
+        html += `
+        <h2>
+        Faktisk resultat:
+        ${actualResult}
+        </h2>
+
+        <h1>
+        ${winner} VINDER
+        </h1>
+        `;
+      }
+
+      document
+       .getElementById("results")
+       .innerHTML =
+       html;
+  }
+
+},250);
+
+</script>
+
+</body>
+</html>
