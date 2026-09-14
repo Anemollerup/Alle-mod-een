@@ -508,6 +508,16 @@ document
 
     `;
       if(showAverage){
+
+      console.log(
+        "showAverage",
+        showAverage
+      );
+
+      console.log(
+        "averageGuess",
+        averageGuess
+      );      
       
       const scoreBar =
       document.getElementById("scoreBar");
@@ -541,7 +551,7 @@ document
           color:red;
           font-weight:bold;
           ">
-          minGuess
+          ${minGuess}
       </div>
 
       <div class="marker"
@@ -558,7 +568,7 @@ document
           color:orange;
           font-weight:bold;
           ">
-          minGuess
+          ${playerGuess}
       </div>
 
       <div class="marker"
@@ -575,7 +585,7 @@ document
           color:blue;
           font-weight:bold;
           ">
-          avgPos
+          ${averageGuess.toFixed(1)}
       </div>
 
       `;
@@ -608,39 +618,6 @@ document
 
   }
 
-  const scoreBar =
-    document.getElementById("scoreBar");
-
-  const size =
-    rangeMax - rangeMin;
-
-  const minPos =
-    ((minGuess-rangeMin)/size)*100;
-
-  const playerPos =
-    ((playerGuess-rangeMin)/size)*100;
-
-  const avgPos =
-    ((averageGuess-rangeMin)/size)*100;
-
-  scoreBar.innerHTML = `
-
-  <div class="marker"
-    style="left:${minPos}%;
-    background:red;">
-  </div>
-
-  <div class="marker"
-    style="left:${playerPos}%;
-    background:orange;">
-  </div>
-
-  <div class="marker"
-    style="left:${avgPos}%;
-    background:blue;">
-  </div>
-
-  `;
 
   if(showActual){
 
