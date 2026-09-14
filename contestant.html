@@ -88,6 +88,8 @@ const db =
   let acceptAnswers = true;
   let roundStartedAt = 0;
   let roundLength = 30;
+  let rangeMin = 0;
+  let rangeMax = 200;
 
 onSnapshot(
   doc(db,"Games","current"),
@@ -96,10 +98,10 @@ onSnapshot(
 
     const data = snapshot.data();
 
-    const rangeMin =
+    rangeMin =
       data.rangeMin ?? 0;
 
-    const rangeMax =
+    rangeMax =
       data.rangeMax ?? 0;
 
     roundStartedAt =
@@ -173,7 +175,21 @@ document
         .value
       );
 
-      if (!acceptAnswers) {
+if(
+      value < rangeMin
+      ||
+      value > rangeMax
+    ){
+
+      document
+        .getElementById("status")
+        .innerHTML =
+        `Indtast et tal mellem ${rangeMin} og ${rangeMax}`;
+
+      return;
+    }
+
+  if (!acceptAnswers) {
 
   document
     .getElementById("status")
