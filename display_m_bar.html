@@ -1,132 +1,119 @@
 <!DOCTYPE html>
 <html lang="da">
 <head>
+
 <meta charset="UTF-8">
-<title>Storskærm</title>
+<title>Alle Mod En</title>
 
 <style>
 
 body{
     font-family: Arial, sans-serif;
+    background:#f5f7fa;
     text-align:center;
+    margin:0;
     padding:40px;
-    
-    min-height:100vh;
-
-    background:
-      linear-gradient(
-        180deg,
-        #f2f8ff,
-        #d9ecff
-      );
 }
 
-#card{
-    background:white;
-
-    max-width:1200px;
-
-    margin:40px auto;
-
-    padding:40px;
-
-    border-radius:20px;
-
-    box-shadow:
-      0 10px 30px rgba(0,0,0,0.15);
-}
-
-#welcomeScreen{
+#welcome{
     margin-top:150px;
 }
 
-#title{
-    font-size:140px;
-    font-weight:900;
+#welcomeTitle{
+    font-size:120px;
     color:#005a9c;
-    margin-bottom:20px;
+    font-weight:900;
 }
 
-#welcomeScreen h2{
-    font-size:50px;
+#welcomeSub{
+    font-size:42px;
     color:#666;
 }
 
-
 #question{
-    font-size:120px;
-    font-weight:900;
-    color:#005a9c;
-    text-transform:uppercase;
-    letter-spacing:8px;
-    margin-top:80px;
-    margin-bottom:40px;
+    font-size:48px;
+    font-weight:bold;
+    margin-bottom:30px;
+}
+
+#timer{
+    font-size:80px;
+    color:#d83b01;
 }
 
 #count{
-    font-size:60px; 
+    font-size:60px;
     color:#005a9c;
+    font-weight:bold;
+}
+
+#results{
+    margin-top:30px;
 }
 
 .bar{
-    background:#0078d4;
-    height:24px;
-    margin:6px;
-    border-radius:12px;
+    background:#005a9c;
+    height:30px;
 }
 
 .row{
     display:flex;
     align-items:center;
     gap:10px;
+    margin:8px auto;
+    max-width:800px;
 }
 
 .label{
     width:120px;
     text-align:right;
-}
-
-#timer{
-    font-size:72px;
-    color:#005a9c;
     font-weight:bold;
-    margin:20px 0;
-}
-
-#countHeader{
-    color:#003366;
-}
-
-#scoreBar{
-
-    position:relative;
-
-    width:900px;
-
-    height:8px;
-
-    background:#bbbbbb;
-
-    margin:40px auto;
-
-    border-radius:6px;
-}
-
-.marker{
-
-    position:absolute;
-
-    top:-18px;
-
-    width:20px;
-
-    height:20px;
-
-    border-radius:50%;
 }
 
 </style>
+
 </head>
+
+<body>
+
+<div id="welcome">
+
+<h1 id="welcomeTitle">
+ALLE MOD EN
+</h1>
+
+<h2 id="welcomeSub">
+Spildevand Plan & Projekt
+</h2>
+
+</div>
+
+<div id="game" style="display:none;">
+
+<h1 id="question">
+Indlæser spørgsmål...
+</h1>
+
+<div id="timer">
+30
+</div>
+
+<h2>
+Svar modtaget
+</h2>
+
+<div id="count">
+0
+</div>
+
+<div id="results">
+</div>
+
+<div id="histogram"
+     style="display:none;">
+</div>
+
+</div>
 
 <script type="module">
 
@@ -159,6 +146,7 @@ const firebaseConfig = {
 
  appId:
  "1:982698004873:web:6d0494926004041fae1158"
+
 };
 
 const app =
@@ -167,182 +155,121 @@ const app =
 const db =
  getFirestore(app);
 
-let currentRound = 1;
+let currentRound = 0;
 let roundStartedAt = 0;
 let roundLength = 30;
+
+let playerGuess = 0;
+let actualResult = 0;
+
+let showAverage = false;
+let showActual = false;
+
+let averageGuess = 0;
 let minGuess = 0;
 let maxGuess = 0;
-let playerGuess = 0;
-let averageGuess = 0;
-let showAverage = false;
-let actualResult = 0;
-let showActual = false;
-let previousRound = 0;
-let rangeMin = 0;
-let rangeMax = 200;
-
 
 onSnapshot(
  doc(db,"Games","current"),
-(snapshot)=>{
+ snapshot => {
 
- const data =
-   snapshot.data();
+   const data =
+     snapshot.data();
 
- rangeMin =
-  data.rangeMin ?? 0;
+   currentRound =
+     data.round || 0;
 
- rangeMax =
-  data.rangeMax ?? 200;
+   roundStartedAt =
+     data.roundStartedAt || 0;
 
- 
- playerGuess =
-  data.playerGuess ?? 0;
+   roundLength =
+     data.roundLength || 30;
 
- showAverage =
-  data.showAverage ?? false;
+   playerGuess =
+     data.playerGuess || 0;
 
- actualResult =
-  data.actualResult ?? 0;
+   actualResult =
+     data.actualResult || 0;
 
- showActual =
-  data.showActual ?? false;
+   showAverage =
+     data.showAverage || false;
 
-currentRound =
-   data.round;
+   showActual =
+     data.showActual || false;
 
-   if(currentRound !== previousRound){
+   if(currentRound === 0){
 
-  document
-    .getElementById("count")
-    .innerText = "0";
+      document
+       .getElementById("welcome")
+       .style.display = "block";
 
-  document
-    .getElementById("histogram")
-    .innerHTML = "";
+      document
+       .getElementById("game")
+       .style.display = "none";
 
-  document
-    .getElementById("histogram")
-    .style.display = "none";
+   }
+   else{
 
-  previousRound = currentRound;
-}
+      document
+       .getElementById("welcome")
+       .style.display = "none";
 
- roundStartedAt =
-   data.roundStartedAt || 0;
+      document
+       .getElementById("game")
+       .style.display = "block";
 
- roundLength =
-   data.roundLength || 30;
+      document
+       .getElementById("question")
+       .innerText =
+       data.title;
 
-if(currentRound === 0){
+   }
 
-  document
-    .getElementById("question")
-    .innerText =
-    "Alle mod En";
-
-}
-else{
-
-  document
-    .getElementById("question")
-    .innerText =
-    data.title;
-
-}
-
-if(currentRound === 0){
-
-  document
-    .getElementById("timer")
-    .style.display = "none";
-
-  document
-    .getElementById("count")
-    .style.display = "none";
-
-  document
-    .getElementById("results")
-    .style.display = "none";
-
-  document
-    .getElementById("histogram")
-    .style.display = "none";
-
-}
-else{
-
-  document
-    .getElementById("timer")
-    .style.display = "block";
-
-  document
-    .getElementById("count")
-    .style.display = "block";
-
-  document
-    .getElementById("results")
-    .style.display = "block";
-
-}
-
-if(currentRound > 0){
-
-  document
-    .getElementById("results")
-    .innerHTML =
-    `
-    <h2>Deltagerens gæt</h2>
-    <h1>${data.playerGuess}</h1>
-    `;
-
-}
-
-});
+ });
 
 onSnapshot(
  collection(db,"guesses"),
- (snapshot)=>{
+ snapshot => {
 
-   const values = [];
+   let values = [];
 
-   snapshot.forEach(docItem=>{
+   snapshot.forEach(docItem => {
 
-     const data =
+      const data =
        docItem.data();
 
-     if(data.round === currentRound){
+      if(data.round === currentRound){
 
-       values.push(
-         Number(data.value)
-       );
+         values.push(
+           Number(data.value)
+         );
 
-     }
-
+      }
+      console.log(values);
    });
 
    document
-     .getElementById("count")
-     .innerText =
-     values.length;
-
-   drawHistogram(values);
+    .getElementById("count")
+    .innerText =
+    values.length;
 
    if(values.length > 0){
 
+      averageGuess =
+       values.reduce(
+         (a,b)=>a+b,
+         0
+       ) / values.length;
+
       minGuess =
-        Math.min(...values);
+       Math.min(...values);
 
       maxGuess =
-        Math.max(...values);
+       Math.max(...values);
 
-      averageGuess =
-        values.reduce(
-          (a,b)=>a+b,
-          0
-          ) / values.length;
+   }
 
-    }
+   drawHistogram(values);
 
  });
 
@@ -353,383 +280,153 @@ function drawHistogram(values){
 
  histogram.innerHTML = "";
 
- if(values.length === 0) return;
+ if(values.length === 0){
+    return;
+ }
 
  const bucketSize = 10;
-
  const buckets = {};
 
- values.forEach(v=>{
+ values.forEach(v => {
 
    const bucket =
-   Math.floor(v/bucketSize)
-   * bucketSize;
+     Math.floor(v / bucketSize)
+      * bucketSize;
 
    buckets[bucket] =
-   (buckets[bucket] || 0) + 1;
+     (buckets[bucket] || 0) + 1;
 
  });
 
  Object.keys(buckets)
  .sort((a,b)=>a-b)
- .forEach(bucket=>{
+ .forEach(bucket => {
 
    const count =
-   buckets[bucket];
+     buckets[bucket];
 
    histogram.innerHTML += `
+   <div class="row">
 
-     <div class="row">
+      <div class="label">
+      ${bucket}-${Number(bucket)+9}
+      </div>
 
-       <div class="label">
+      <div class="bar"
+           style="width:${count*25}px">
+      </div>
 
-       ${bucket}-${Number(bucket)+9}
+      <div>
+      ${count}
+      </div>
 
-       </div>
-
-       <div
-         class="bar"
-         style="
-           width:${count*15}px;
-         ">
-       </div>
-
-       <div>${count}</div>
-
-     </div>
-
+   </div>
    `;
-
  });
 
 }
 
 setInterval(()=>{
+
   if(currentRound === 0){
-
-  document
-    .getElementById("question")
-    .style.display =
-    "none";
-
-  document
-    .getElementById("timer")
-    .style.display =
-    "none";
-
-  document
-    .getElementById("count")
-    .style.display =
-    "none";
-
-  document
-    .getElementById("results")
-    .style.display =
-    "none";
-
-  document
-    .getElementById("histogram")
-    .style.display =
-    "none";
-
-  document
-  .getElementById("countHeader")
-  .style.display = "none";
-
-  return;
-}
-
-else{
-document
-  .getElementById("timer")
-  .style.display =
-  "block";
-
-document
-  .getElementById("count")
-  .style.display =
-  "block";
-
-document
-  .getElementById("results")
-  .style.display =
-  "block";
-
-document
-  .getElementById("countHeader")
-  .style.display = "block";
-}
-
-  if(!roundStartedAt){
-    return;
+     return;
   }
-
-  const elapsed =
-    (Date.now() - roundStartedAt) / 1000;
 
   const remaining =
     Math.max(
       0,
       Math.ceil(
-        roundLength - elapsed
+        roundLength -
+        (
+          Date.now()
+          - roundStartedAt
+        ) / 1000
       )
     );
 
-  if(remaining <= 0){
-
-  document
-    .getElementById("timer")
-    .innerText =
-    "⏰ Tiden er udløbet";
-
-  document
-    .getElementById("histogram")
-    .style.display =
-    "block";
-    
-  document
-    .getElementById("results")
-    .innerHTML = `
-
-      <h2>
-      Deltagerens gæt:
-      ${playerGuess}
-      </h2>
-
-      <h2>
-      Laveste gæt:
-      ${minGuess}
-      </h2>
-
-      <h2>
-      Højeste gæt:
-      ${minGuess}
-      </h2>
-
-    `;
-      if(showAverage){
-
-      console.log(
-        "showAverage",
-        showAverage
-      );
-
-      console.log(
-        "averageGuess",
-        averageGuess
-      );      
-      
-      const scoreBar =
-      document.getElementById("scoreBar");
-
-      const size =
-      rangeMax - rangeMin;
-
-      const minPos =
-      ((minGuess-rangeMin)/size)*100;
-
-      const playerPos =
-      ((playerGuess-rangeMin)/size)*100;
-
-      const avgPos =
-      ((averageGuess-rangeMin)/size)*100;
-
-      scoreBar.innerHTML = `
-
-      <div class="marker"
-        style="left:${minPos}%;
-        background:red;">
-      </div>
-
-
-      <div
-          style="
-          position:absolute;
-          left:${minPos}%;
-          top:-50px;
-          transform:translateX(-50%);
-          color:red;
-          font-weight:bold;
-          ">
-          ${minGuess}
-      </div>
-
-      <div class="marker"
-        style="left:${playerPos}%;
-        background:orange;">
-      </div>
-
-      <div
-          style="
-          position:absolute;
-          left:${playerPos}%;
-          top:-50px;
-          transform:translateX(-50%);
-          color:orange;
-          font-weight:bold;
-          ">
-          ${playerGuess}
-      </div>
-
-      <div class="marker"
-        style="left:${avgPos}%;
-      background:blue;">
-      </div>
-
-      <div
-          style="
-          position:absolute;
-          left:${avgPos}%;
-          top:-50px;
-          transform:translateX(-50%);
-          color:blue;
-          font-weight:bold;
-          ">
-          ${averageGuess.toFixed(1)}
-      </div>
-
-      `;
+  if(remaining > 0){
 
       document
-        .getElementById("results")
-        .innerHTML += `
+       .getElementById("timer")
+       .innerText =
+       remaining + " sek";
 
-      <h2>
-      Publikums gennemsnit:
-      ${averageGuess.toFixed(1)}
-      </h2>
-
-      `;
-
-  }
+      document
+       .getElementById("histogram")
+       .style.display =
+       "none";
 
   }
   else{
 
-    document
-      .getElementById("timer")
-      .innerText =
-      remaining + " sek";
-
-    document
-      .getElementById("histogram")
-      .style.display =
-      "none";
-
-  }
-
-
-  if(showActual){
-
-      const actualPos =
-        ((actualResult - rangeMin) /
-        (rangeMax - rangeMin))
-        * 100;
-
-      const scoreBar =
-        document.getElementById("scoreBar");
-
-      scoreBar.innerHTML += `
-
-        <div
-          class="marker"
-          style="
-          left:${actualPos}%;
-          background:green;
-          ">
-        </div>
-
-        <div
-          style="
-          position:absolute;
-          left:${actualPos}%;
-          top:-50px;
-          transform:translateX(-50%);
-          color:green;
-          font-weight:bold;
-          ">
-          Resultat
-        </div>
-      `;
-
-
-      const audienceDistance =
-        Math.abs(
-        averageGuess -
-        actualResult
-        );
-
-      const playerDistance =
-        Math.abs(
-        playerGuess -
-        actualResult
-        );
-
-      const winner =
-        audienceDistance <
-        playerDistance
-        ? "👥 PUBLIKUM"
-        : "🧍 DELTAGEREN";
+      document
+       .getElementById("timer")
+       .innerText =
+       "⏰ Tiden er udløbet";
 
       document
-        .getElementById("results")
-        .innerHTML += `
+       .getElementById("histogram")
+       .style.display =
+       "block";
 
-      <h2>
-      Faktisk resultat:
-      ${actualResult}
-      </h2>
-
-      <h1>
-      ${winner} VINDER
-      </h1>
-
+      let html = `
+      <h2>Deltagerens gæt: ${playerGuess}</h2>
+      <h2>Laveste gæt: ${minGuess}</h2>
+      <h2>Højeste gæt: ${maxGuess}</h2>
       `;
+
+      if(showAverage){
+
+        html += `
+        <h2>
+        Publikums gennemsnit:
+        ${averageGuess.toFixed(1)}
+        </h2>
+        `;
+
+      }
+
+      if(showActual){
+
+        const audienceDistance =
+          Math.abs(
+            averageGuess -
+            actualResult
+          );
+
+        const playerDistance =
+          Math.abs(
+            playerGuess -
+            actualResult
+          );
+
+        const winner =
+          audienceDistance <
+          playerDistance
+          ? "👥 PUBLIKUM"
+          : "🧍 DELTAGEREN";
+
+        html += `
+        <h2>
+        Faktisk resultat:
+        ${actualResult}
+        </h2>
+
+        <h1>
+        ${winner} VINDER
+        </h1>
+        `;
+      }
+
+      document
+       .getElementById("results")
+       .innerHTML =
+       html;
   }
 
-
-}, 250);
-
-
-
+},250);
 
 </script>
 
-<body>
-
-<div id="welcomeScreen">
-
-  <h1 id="title">
-    ALLE MOD EN
-  </h1>
-
-  <h2>
-    Spildevand Plan & Projekt
-  </h2>
-
-</div>
-
-<div id="card">
-
-<h1 id="question">ALLE MOD EN</h1>
-<h1 id="timer">30 sek</h1>
-
-<h2 id="countHeader">Svar modtaget</h2>
-
-<div id="count">0</div>
-
-<hr>
-
-<div id="results"></div>
-
-<hr>
-
-<div id="scoreBar"></div>
-
-
-<div id="histogram" style="display:none;"></div>
-
-</div>
-
-<body>
-<html>
+</body>
+</html>
