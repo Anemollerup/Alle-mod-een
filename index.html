@@ -220,6 +220,9 @@ document
      return;
    }
 
+  console.log("Passerede check 1");
+
+
    const value =
      Number(
        document
@@ -241,10 +244,13 @@ document
       return;
     }
 
+    console.log("Passerede check 1");
+
    if(!value && value !== 0){
 
       return;
    }
+  console.log("Passerede check 1");
 
    const elapsed =
      (Date.now() - roundStartedAt)
@@ -260,6 +266,8 @@ document
       return;
    }
 
+console.log("Passerede check 1");
+
    const gameSnapshot =
      await getDoc(
        doc(db,"Games","current")
@@ -268,6 +276,12 @@ document
    const roundNumber =
      gameSnapshot.data().round;
 
+
+
+   console.log("Forsøger at gemme:", value);
+
+try {
+  
    await addDoc(
      collection(db,"guesses"),
      {
@@ -276,6 +290,17 @@ document
        timestamp:Date.now()
      }
    );
+
+  console.log("Gemt!");
+
+  }
+catch(error){
+
+  console.error(error);
+
+}
+
+
 
    localStorage.setItem(
      "answeredRound",
@@ -305,7 +330,9 @@ setInterval(()=>{
 
       return;
    }
+console.log("Passerede check 1");
 
+''
    const elapsed =
      (Date.now() - roundStartedAt)
      / 1000;
