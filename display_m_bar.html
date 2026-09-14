@@ -616,22 +616,8 @@ setInterval(()=>{
 
         drawScoreBar();
 
-      let html = `
-      <h2>Deltagerens gæt: ${playerGuess}</h2>
-      <h2>Laveste gæt: ${minGuess}</h2>
-      <h2>Højeste gæt: ${maxGuess}</h2>
-      `;
+      let html = "";
 
-      if(showAverage){
-
-        html += `
-        <h2>
-        Publikums gennemsnit:
-        ${averageGuess.toFixed(1)}
-        </h2>
-        `;
-
-      }
 
       if(showActual){
 
