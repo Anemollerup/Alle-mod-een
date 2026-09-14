@@ -245,7 +245,7 @@ onSnapshot(
          );
 
       }
-
+      console.log(values);
    });
 
    document
