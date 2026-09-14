@@ -301,7 +301,7 @@ onSnapshot(
     rangeMax;
 
    currentRound =
-     data.round || 0;
+     data.round ?? 0;
 
    roundStartedAt =
      data.roundStartedAt || 0;
@@ -310,7 +310,7 @@ onSnapshot(
      data.roundLength || 30;
 
    playerGuess =
-     data.playerGuess || 0;
+     data.playerGuess ?? 0;
 
    actualResult =
      data.actualResult || 0;
@@ -485,6 +485,18 @@ function drawScoreBar(){
         </div>
 
     `;
+
+    scoreBar.innerHTML += `
+
+    <div class="marker"
+         style="
+            left:${playerPos}%;
+            background:orange;
+            z-index:10;
+         ">
+    </div>
+
+`;
 
     scoreBar.innerHTML += `
 
