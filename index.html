@@ -71,11 +71,19 @@ const db =
   let acceptAnswers = true;
   let roundStartedAt = 0;
   let roundLength = 30;
+  let previousRound = 0;
 
 onSnapshot(
   doc(db,"Games","current"),
   
   (snapshot) => {
+
+    if(currentRound !== previousRound){
+
+      localStorage.removeItem("answeredRound");
+
+      previousRound = currentRound;
+    }
 
     const data = snapshot.data();
 
