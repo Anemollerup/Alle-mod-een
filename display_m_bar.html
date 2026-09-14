@@ -116,6 +116,19 @@ body{
     transform:translateX(-50%);
 }
 
+.rangeLine{
+
+    position:absolute;
+
+    top:0;
+
+    height:10px;
+
+    background:#d83b01;
+
+    border-radius:10px;
+}
+
 #scoreLegend{
 
     margin-top:30px;
@@ -463,34 +476,43 @@ function drawScoreBar(){
 
     scoreBar.innerHTML += `
 
-        <div class="marker"
-             style="
-                left:${minPos}%;
-                background:red;
-             ">
-        </div>
-
-        <div class="marker"
-             style="
-                left:${maxPos}%;
-                background:purple;
-             ">
-        </div>
-
-        <div class="marker"
-             style="
-                left:${playerPos}%;
-                background:orange;
-             ">
+        <div
+            class="rangeLine"
+            style="
+            left:${minPos}%;
+            width:${maxPos-minPos}%;
+            ">
         </div>
 
     `;
 
-    scoreLegend.innerHTML +=
-      `🔴 Min (${minGuess})<br>`;
+    scoreBar.innerHTML += `
 
-    scoreLegend.innerHTML +=
-      `🟣 Max (${maxGuess})<br>`;
+    <div
+        style="
+        position:absolute;
+        left:${minPos}%;
+        top:-35px;
+        transform:translateX(-50%);
+        color:#d83b01;
+        font-weight:bold;
+        ">
+        ${minGuess}
+    </div>
+
+    <div
+        style="
+        position:absolute;
+        left:${maxPos}%;
+        top:-35px;
+        transform:translateX(-50%);
+        color:#d83b01;
+        font-weight:bold;
+        ">
+        ${maxGuess}
+    </div>
+
+    `;
 
     scoreLegend.innerHTML +=
       `🟠 Deltager (${playerGuess})<br>`;
