@@ -125,6 +125,19 @@ body{
     line-height:1.8;
 }
 
+#winnerText{
+
+    font-size:100px;
+
+    font-weight:900;
+
+    color:#005a9c;
+
+    margin-top:30px;
+
+    text-transform:uppercase;
+}
+
 </style>
 
 </head>
@@ -624,10 +637,11 @@ setInterval(()=>{
         ${actualResult}
         </h2>
 
-        <h1>
+        <div id="winnerText">
         ${winner} VINDER
-        </h1>
+        </div>
         `;
+        ``
       }
 
       document

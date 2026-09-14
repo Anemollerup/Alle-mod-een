@@ -39,12 +39,25 @@ button{
     font-size:24px;
     font-weight:bold;
 }
+
+#rangeText{
+
+    font-size:24px;
+
+    color:#666;
+
+    margin-bottom:20px;
+
+}
+
 </style>
 </head>
 
 <body>
 
 <h1 id="question">Indlæser spørgsmål...</h1>
+
+<p id="rangeText"></p>
 
 <p id="openStatus">
 ✅ Afstemning åben
@@ -117,6 +130,12 @@ onSnapshot(
    const data =
      snapshot.data();
 
+   const rangeMin =
+    data.rangeMin ?? 0;
+
+   const rangeMax =
+    data.rangeMax ?? 0;
+
    currentRound =
      data.round;
 
@@ -133,6 +152,13 @@ onSnapshot(
      .getElementById("question")
      .innerText =
      data.title;
+
+   document
+    .getElementById("rangeText")
+    .innerText =
+    `Gæt mellem ${rangeMin} og ${rangeMax}`;
+    ``
+  
 
    if(currentRound !== previousRound){
 
@@ -199,6 +225,20 @@ document
        .getElementById("guess")
        .value
      );
+  
+   if(
+      value < rangeMin
+      ||
+      value > rangeMax
+    ){
+
+      document
+        .getElementById("status")
+        .innerHTML =
+        `Indtast et tal mellem ${rangeMin} og ${rangeMax}`;
+
+      return;
+    }
 
    if(!value && value !== 0){
 
