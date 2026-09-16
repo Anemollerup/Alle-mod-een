@@ -17,9 +17,38 @@
 
 }
 
+#welcomeScreen{
+
+    display:none;
+
+    margin-top:150px;
+
+    text-align:center;
+}
+
+#welcomeScreen h1{
+
+    font-size:80px;
+
+    color:#005a9c;
+}
+
+#welcomeScreen h2{
+
+    color:#666;
+}
+
 </style>
 
 <body>
+
+<div id="welcomeScreen">
+
+  <h1>ALLE MOD EN</h1>
+
+  <h2>Konkurrencen starter om lidt</h2>
+
+</div>
 
 <h1 id="question">Indlæser spørgsmål...</h1>
 
@@ -112,6 +141,81 @@ onSnapshot(
 
     currentRound = data.round;
 
+    if(currentRound === 0){
+
+      document
+        .getElementById("welcomeScreen")
+        .style.display =
+        "block";
+
+      document
+        .getElementById("question")
+        .style.display =
+        "none";
+
+      document
+        .getElementById("rangeText")
+        .style.display =
+        "none";
+
+      document
+        .getElementById("openStatus")
+        .style.display =
+        "none";
+
+      document
+        .getElementById("guess")
+        .style.display =
+        "none";
+
+      document
+        .getElementById("sendBtn")
+        .style.display =
+        "none";
+
+      document
+        .getElementById("timer")
+        .style.display =
+        "none";
+
+      return;
+    }
+
+    document
+      .getElementById("welcomeScreen")
+      .style.display =
+      "none";
+
+    document
+      .getElementById("question")
+      .style.display =
+      "block";
+
+    document
+      .getElementById("rangeText")
+      .style.display =
+      "block";
+
+    document
+      .getElementById("openStatus")
+      .style.display =
+      "block";
+
+    document
+      .getElementById("guess")
+      .style.display =
+      "inline";
+
+    document
+      .getElementById("sendBtn")
+      .style.display =
+      "inline";
+
+    document
+      .getElementById("timer")
+      .style.display =
+      "block";
+
       document
         .getElementById("openStatus")
         .innerText =
@@ -154,9 +258,7 @@ onSnapshot(
 
     acceptAnswers =
       data.acceptAnswers;
-
-
-
+      
   }
 );
 
