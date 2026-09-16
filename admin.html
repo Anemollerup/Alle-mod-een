@@ -20,6 +20,7 @@
 Start ny runde
 </button>
 
+
 <input id="rangeMin" type="number" value="0">
 
 <input id="rangeMax" type="number" value="20">
@@ -53,6 +54,10 @@ Aktuel runde:
 <span id="roundNumber"></span>
 </p>
 
+<button id="resetGame">
+Nulstil spil
+</button>
+
 <p id="status"></p>
 
 <script type="module">
@@ -68,6 +73,7 @@ import {
  getDoc,
  getDocs,
  updateDoc,
+ deleteDoc,
  onSnapshot,
  query,
  increment
@@ -302,6 +308,53 @@ document
    );
 
  });
+
+document
+  .getElementById("resetGame")
+  .addEventListener(
+  "click",
+  async ()=>{
+
+    // Slet alle gæt
+
+    const guessesSnapshot =
+      await getDocs(
+        collection(db,"guesses")
+      );
+
+    for(const guessDoc of guessesSnapshot.docs){
+
+      await deleteDoc(
+        doc(
+          db,
+          "guesses",
+          guessDoc.id
+        )
+      );
+
+    }
+
+    // Nulstil spillet
+
+    await updateDoc(
+      doc(db,"Games","current"),
+      {
+        round: 0,
+        playerGuess: 0,
+        actualResult: 0,
+        showAverage: false,
+        showActual: false,
+        acceptAnswers: false,
+        roundStartedAt: 0
+      }
+    );
+
+    document
+      .getElementById("status")
+      .innerHTML =
+      "✅ Spillet er nulstillet";
+
+  });
 
 </script>
 
