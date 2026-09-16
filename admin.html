@@ -5,21 +5,173 @@
 <title>Admin</title>
 </head>
 
+<style>
+.roundCard{
+
+    background:white;
+
+    padding:25px;
+
+    margin-bottom:25px;
+
+    border-radius:12px;
+
+    box-shadow:
+      0 2px 8px rgba(0,0,0,.15);
+}
+
+</style>
+
 <body>
 
 <h1>Admin Panel</h1>
 
-<p>Spørgsmål</p>
+<div class="roundCard">
 
-<input
- id="questionInput"
- style="width:600px;"
->
+  <h2>Runde 1</h2>
 
-<button id="startRound">
-Start ny runde
-</button>
+  <button id="startRound1">
+    Start runde 1
+  </button>
 
+  <br><br>
+
+  <p>Spørgsmål</p>
+  <input
+    id="question1"
+    style="width:500px;">
+
+
+  <label>Min:</label>
+
+  <input
+    id="rangeMin1"
+    type="number"
+    value="0">
+
+  <label>Max:</label>
+
+  <input
+    id="rangeMax1"
+    type="number"
+    value="20">
+
+  <br><br>
+
+  <button id="showAverageBtn1">
+    Beregn publikum
+  </button>
+
+
+  <br><br>
+
+
+  <input
+    id="actualValue1"
+    type="number"
+    placeholder="Faktisk resultat">
+
+  <button id="revealBtn1">
+    Vis resultat
+  </button>
+
+</div>
+
+<div class="roundCard">
+
+  <h2>Runde 2</h2>
+
+  <button id="startRound2">
+    Start runde 2
+  </button>
+
+  <p>Spørgsmål</p>
+
+  <input
+    id="question2"
+    style="width:500px;">
+
+
+  <label>Min:</label>
+
+  <input
+    id="rangeMin2"
+    type="number"
+    value="0">
+
+  <label>Max:</label>
+
+  <input
+    id="rangeMax2"
+    type="number"
+    value="20">
+
+  <br><br>
+
+  <button id="showAverageBtn2">
+    Beregn publikum
+  </button>
+
+  <br><br>
+
+    <input
+    id="actualValue1"
+    type="number"
+    placeholder="Faktisk resultat">
+
+  <button id="revealBtn2">
+    Vis resultat
+  </button>
+
+</div>
+
+<div class="roundCard">
+
+  <h2>Runde 3</h2>
+
+    <button id="startRound3">
+     Start runde 3
+    </button>
+
+  <p>Spørgsmål</p>
+
+  <input
+    id="question3"
+    style="width:500px;">
+
+  <label>Min:</label>
+
+  <input
+    id="rangeMin3"
+    type="number"
+    value="0">
+
+  <label>Max:</label>
+
+  <input
+    id="rangeMax3"
+    type="number"
+    value="20">
+
+  <br><br>
+
+   <button id="showAverageBtn1">
+    Beregn publikum
+  </button>
+
+  <br><br>
+
+  <input
+    id="actualValue1"
+    type="number"
+    placeholder="Faktisk resultat">
+
+
+  <button id="revealBtn1">
+    Vis resultat
+  </button>
+
+</div>
 
 <input id="rangeMin" type="number" value="0">
 
@@ -27,27 +179,7 @@ Start ny runde
 
 <br><br>
 
-
 <hr>
-
-<h2>Resultat</h2>
-
-<input
- id="actualValue"
- type="number"
- placeholder="Faktisk resultat">
-
-<br><br>
-
-<button id="showAverageBtn">
-Beregn publikum
-</button>
-
-<button id="revealBtn">
-Afslør resultat
-</button>
-
-<div id="resultBox"></div>
 
 <p>
 Aktuel runde:
@@ -131,62 +263,137 @@ console.log(snap.data());
 loadCurrentData();
 
 document
-.getElementById("startRound")
+.getElementById("startRound1")
 .addEventListener(
  "click",
  async ()=>{
 
-  const title =
-    document
-    .getElementById("questionInput")
-    .value;
+   const title =
+     document
+     .getElementById("question1")
+     .value;
 
-  const rangeMin =
-    Number(
-      document.getElementById("rangeMin").value
-    );
+   const rangeMin =
+     Number(
+       document
+       .getElementById("rangeMin1")
+       .value
+     );
 
-  const rangeMax =
-    Number(
-      document.getElementById("rangeMax").value
-    );
+   const rangeMax =
+     Number(
+       document
+       .getElementById("rangeMax1")
+       .value
+     );
 
-
-await updateDoc(
-  doc(db,"Games","current"),
-  {
-      title:title,
-      acceptAnswers:true,
-      round: increment(1),
-      roundStartedAt: Date.now(),
-      roundLength: 60,
-
-      rangeMin: rangeMin,
-      rangeMax: rangeMax,
-
-      playerGuess:0,
-      actualResult:0,
-      showAverage:false,
-      showActual:false
-  }
-);
-
-  const snap =
-    await getDoc(
-      doc(db,"Games","current")
-    );
-
-  document
-    .getElementById("roundNumber")
-    .innerText =
-    snap.data().round;
-
-  document
-    .getElementById("status")
-    .innerHTML =
-    "✅ Ny runde startet";
+   await updateDoc(
+     doc(db,"Games","current"),
+     {
+       title:title,
+       round:1,
+       acceptAnswers:true,
+       roundStartedAt:Date.now(),
+       roundLength:60,
+       rangeMin:rangeMin,
+       rangeMax:rangeMax,
+       playerGuess:0,
+       showAverage:false,
+       showActual:false,
+       actualResult:0
+     }
+   );
 
  });
+
+ document
+.getElementById("startRound2")
+.addEventListener(
+ "click",
+ async ()=>{
+
+   const title =
+     document
+     .getElementById("question2")
+     .value;
+
+   const rangeMin =
+     Number(
+       document
+       .getElementById("rangeMin2")
+       .value
+     );
+
+   const rangeMax =
+     Number(
+       document
+       .getElementById("rangeMax2")
+       .value
+     );
+
+   await updateDoc(
+     doc(db,"Games","current"),
+     {
+       title:title,
+       round:2,
+       acceptAnswers:true,
+       roundStartedAt:Date.now(),
+       roundLength:60,
+       rangeMin:rangeMin,
+       rangeMax:rangeMax,
+       playerGuess:0,
+       showAverage:false,
+       showActual:false,
+       actualResult:0
+     }
+   );
+
+ });
+
+document
+.getElementById("startRound3")
+.addEventListener(
+ "click",
+ async ()=>{
+
+   const title =
+     document
+     .getElementById("question3")
+     .value;
+
+   const rangeMin =
+     Number(
+       document
+       .getElementById("rangeMin3")
+       .value
+     );
+
+   const rangeMax =
+     Number(
+       document
+       .getElementById("rangeMax3")
+       .value
+     );
+
+   await updateDoc(
+     doc(db,"Games","current"),
+     {
+       title:title,
+       round:3,
+       acceptAnswers:true,
+       roundStartedAt:Date.now(),
+       roundLength:60,
+       rangeMin:rangeMin,
+       rangeMax:rangeMax,
+       playerGuess:0,
+       showAverage:false,
+       showActual:false,
+       actualResult:0
+     }
+   );
+
+ });
+
 
  document
  .getElementById("showAverageBtn")
