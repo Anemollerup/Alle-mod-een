@@ -45,6 +45,12 @@ button:disabled{
 
 <h1>Admin Panel</h1>
 
+<p>Deltagerens navn</p>
+
+<input
+  id="playerName"
+  placeholder="NN">
+
 <div class="roundCard" id="roundCard1">
 
   <h2>Runde 1</h2>
@@ -193,18 +199,10 @@ button:disabled{
 </div>
 
 
-<br><br>
+<br>
 
 <hr>
 
-<p>
-Aktuel runde:
-<span id="roundNumber"></span>
-</p>
-
-<input
-  id="playerName"
-  placeholder="Deltagerens navn">
 
 <button id="showFinalBtn">
 🏆 Vis vinder
@@ -215,6 +213,11 @@ Aktuel runde:
 <button id="resetGame">
 Nulstil spil
 </button>
+
+<p>
+Aktuel runde:
+<span id="roundNumber"></span>
+</p>
 
 <p id="status"></p>
 
@@ -311,6 +314,12 @@ document
    await updateDoc(
      doc(db,"Games","current"),
      {
+      
+      playerName:
+        document
+          .getElementById("playerName")
+          .value,
+       
        title:title,
        round:1,
        acceptAnswers:true,
