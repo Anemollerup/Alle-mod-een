@@ -263,10 +263,11 @@ onSnapshot(
     "block";
 
 
-  roundStartedAt: Date.now(),
+   roundStartedAt =
+     data.roundStartedAt || 0;
 
    roundLength =
-     data.roundLength || 30;
+     data.roundLength || 60;
 
    acceptAnswers =
      data.acceptAnswers;
