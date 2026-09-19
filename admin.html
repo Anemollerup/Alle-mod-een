@@ -623,6 +623,31 @@ document
 
   });
 
+  [
+ "question1","rangeMin1","rangeMax1",
+ "question2","rangeMin2","rangeMax2",
+ "question3","rangeMin3","rangeMax3"
+].forEach(id => {
+
+   const element =
+     document.getElementById(id);
+
+   element.value =
+     localStorage.getItem(id)
+     || element.value;
+
+   element.addEventListener(
+     "input",
+     ()=>{
+       localStorage.setItem(
+         id,
+         element.value
+       );
+     }
+   );
+
+});
+
 </script>
 
 </body>
