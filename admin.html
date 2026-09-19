@@ -88,7 +88,7 @@
   </button>
 
     <input
-    id="actualValue1"
+    id="actualValue2"
     type="number"
     placeholder="Faktisk resultat">
 
@@ -133,17 +133,17 @@
      Start runde 3
     </button>
 
-    <button id="showAverageBtn1">
+    <button id="showAverageBtn3">
       Beregn publikum
     </button>
 
     <input
-      id="actualValue1"
+      id="actualValue3"
       type="number"
       placeholder="Faktisk resultat">
 
 
-    <button id="revealBtn1">
+    <button id="revealBtn3">
       Vis resultat
     </button>
 
@@ -248,11 +248,6 @@ async function loadCurrentData() {
 console.log(snap.data());
 
  document
-   .getElementById("questionInput")
-   .value =
-   snap.data().title;
-
- document
    .getElementById("roundNumber")
    .innerText =
    snap.data().round;
@@ -266,10 +261,6 @@ document
 .addEventListener(
  "click",
  async ()=>{
-
-    document
-    .getElementById("resultBox")
-    .innerHTML = "";
 
    const title =
      document
@@ -306,10 +297,15 @@ document
        actualResult:0
      }
    );
+
+   document
+    .getElementById("roundNumber")
+    .innerText = "1";
+    
 document
-    .getElementById("status")
-    .innerHTML =
-    "✅ Runde 1 startet";
+        .getElementById("status")
+        .innerHTML =
+        "✅ Runde 1 startet";
 
  });
 
@@ -318,10 +314,6 @@ document
 .addEventListener(
  "click",
  async ()=>{
-
-  document
-  .getElementById("resultBox")
-  .innerHTML = "";
 
    const title =
      document
@@ -358,10 +350,15 @@ document
        actualResult:0
      }
    );
-document
-    .getElementById("status")
-    .innerHTML =
-    "✅ Runde 2 startet";
+
+   document
+    .getElementById("roundNumber")
+    .innerText = "1";
+
+    document
+        .getElementById("status")
+        .innerHTML =
+        "✅ Runde 2 startet";
  });
 
 document
@@ -369,10 +366,6 @@ document
 .addEventListener(
  "click",
  async ()=>{
-
-  document
-  .getElementById("resultBox")
-  .innerHTML = "";
 
    const title =
      document
@@ -409,10 +402,15 @@ document
        actualResult:0
      }
    );
-document
-    .getElementById("status")
-    .innerHTML =
-    "✅ Runde 3 startet";
+
+   document
+    .getElementById("roundNumber")
+    .innerText = "1";
+
+  document
+      .getElementById("status")
+      .innerHTML =
+      "✅ Runde 3 startet";
  });
 
 
@@ -477,29 +475,6 @@ document
   "✅ Publikumsgennemsnit vist";
 
 });
-
-
-const snapshot =
-   await getDocs(
-    collection(db,"guesses")
-   );
-
-let answers = [];
-
-snapshot.forEach(docItem => {
-
-   const data =
-    docItem.data();
-
-   if(data.round === currentRound){
-      answers.push(data.value);
-   }
-  
-});
-
-const average =
-   answers.reduce((a,b)=>a+b,0)
-   / answers.length;
 
 document
 .getElementById("revealBtn1")
