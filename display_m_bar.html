@@ -177,6 +177,22 @@ body{
 
 </head>
 
+<div id="finalScreen"
+     style="display:none;">
+
+  <h1 style="font-size:120px;">
+    🏆 RESULTATET AF ALLE MOD EN 🏆
+  </h1>
+
+  <h2 id="finalWinner"
+      style="
+        font-size:80px;
+        color:#005a9c;
+      ">
+  </h2>
+
+</div>
+
 <body>
 
 <div id="welcome">
@@ -309,6 +325,30 @@ onSnapshot(
    const data =
      snapshot.data();
 
+   const round1Winner =
+    data.round1Winner || "";
+
+   const round2Winner =
+    data.round2Winner || "";
+
+   const round3Winner =
+    data.round3Winner || "";
+
+   const showFinal =
+    data.showFinal || false;
+
+    const audienceWins =
+    (round1Winner === "audience" ? 1 : 0)
+    +
+    (round2Winner === "audience" ? 1 : 0)
+    +
+    (round3Winner === "audience" ? 1 : 0);
+
+    const finalWinnerText =
+      audienceWins >= 2
+      ? "👥 PUBLIKUM VINDER!"
+      : "🧍 DELTAGEREN VINDER!";
+
     rangeMin =
     data.rangeMin ?? 0;
 
@@ -398,6 +438,31 @@ onSnapshot(
        data.title;
 
    }
+
+if(showFinal){
+
+    document
+      .getElementById("welcome")
+      .style.display =
+      "none";
+
+    document
+      .getElementById("game")
+      .style.display =
+      "none";
+
+    document
+      .getElementById("finalScreen")
+      .style.display =
+      "block";
+
+    document
+      .getElementById("finalWinner")
+      .innerText =
+      finalWinnerText;
+
+    return;
+}
 
  });
 

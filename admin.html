@@ -506,11 +506,64 @@ document
        .value
      );
 
+   const snapshot =
+      await getDocs(
+        collection(db,"guesses")
+      );
+
+    let answers = [];
+
+    snapshot.forEach(docItem => {
+
+      const data =
+        docItem.data();
+
+      if(data.round === 1){
+
+          answers.push(
+            Number(data.value)
+          );
+
+      }
+
+    });
+
+    const average =
+      answers.reduce(
+        (a,b)=>a+b,
+        0
+      ) / answers.length;
+
+    const gameSnapshot =
+      await getDoc(
+        doc(db,"Games","current")
+      );
+
+    const playerGuess =
+      gameSnapshot.data().playerGuess;
+
+    const audienceDistance =
+      Math.abs(
+        average - actual
+      );
+
+    const playerDistance =
+      Math.abs(
+        playerGuess - actual
+      );
+
+    const roundWinner =
+      audienceDistance <
+      playerDistance
+      ? "audience"
+      : "player";
+
    await updateDoc(
      doc(db,"Games","current"),
      {
        actualResult: actual,
-       showActual:true
+       showActual:true,
+       round1Winner: roundWinner
      }
    );
 
@@ -534,13 +587,67 @@ document
        .value
      );
 
+    const snapshot =
+      await getDocs(
+        collection(db,"guesses")
+      );
+
+    let answers = [];
+
+    snapshot.forEach(docItem => {
+
+      const data =
+        docItem.data();
+
+      if(data.round === 2){
+
+          answers.push(
+            Number(data.value)
+          );
+
+      }
+
+    });
+
+    const average =
+      answers.reduce(
+        (a,b)=>a+b,
+        0
+      ) / answers.length;
+
+    const gameSnapshot =
+      await getDoc(
+        doc(db,"Games","current")
+      );
+
+    const playerGuess =
+      gameSnapshot.data().playerGuess;
+
+    const audienceDistance =
+      Math.abs(
+        average - actual
+      );
+
+    const playerDistance =
+      Math.abs(
+        playerGuess - actual
+      );
+
+    const roundWinner =
+      audienceDistance <
+      playerDistance
+      ? "audience"
+      : "player";
+
    await updateDoc(
      doc(db,"Games","current"),
      {
        actualResult: actual,
-       showActual:true
+       showActual:true,
+       round2Winner: roundWinner
      }
    );
+
 
    document
      .getElementById("status")
@@ -562,13 +669,67 @@ document
        .value
      );
 
+   const snapshot =
+      await getDocs(
+        collection(db,"guesses")
+      );
+
+    let answers = [];
+
+    snapshot.forEach(docItem => {
+
+      const data =
+        docItem.data();
+
+      if(data.round === 3){
+
+          answers.push(
+            Number(data.value)
+          );
+
+      }
+
+    });
+
+    const average =
+      answers.reduce(
+        (a,b)=>a+b,
+        0
+      ) / answers.length;
+
+    const gameSnapshot =
+      await getDoc(
+        doc(db,"Games","current")
+      );
+
+    const playerGuess =
+      gameSnapshot.data().playerGuess;
+
+    const audienceDistance =
+      Math.abs(
+        average - actual
+      );
+
+    const playerDistance =
+      Math.abs(
+        playerGuess - actual
+      );
+
+    const roundWinner =
+      audienceDistance <
+      playerDistance
+      ? "audience"
+      : "player";
+
    await updateDoc(
      doc(db,"Games","current"),
      {
        actualResult: actual,
-       showActual:true
+       showActual:true,
+       round3Winner: roundWinner
      }
    );
+
 
    document
      .getElementById("status")
@@ -624,19 +785,25 @@ document
 
     // Nulstil spillet
 
-    await updateDoc(
-      doc(db,"Games","current"),
-      {
-        round: 0,
-        title:"",
-        playerGuess: 0,
-        actualResult: 0,
-        showAverage: false,
-        showActual: false,
-        acceptAnswers: false,
-        roundStartedAt: 0
-      }
-    );
+  await updateDoc(
+    doc(db,"Games","current"),
+    {
+      round:0,
+      title:"",
+      playerGuess:0,
+      actualResult:0,
+      showAverage:false,
+      showActual:false,
+      acceptAnswers:false,
+      roundStartedAt:0,
+
+      round1Winner:"",
+      round2Winner:"",
+      round3Winner:"",
+
+      showFinal:false
+    }
+  );
 
     document
       .getElementById("status")

@@ -259,10 +259,6 @@ onSnapshot(
       .getElementById("rangeText")
       .innerText =
       `Gæt mellem ${rangeMin} og ${rangeMax}`;
-
-    acceptAnswers =
-      data.acceptAnswers;
-
   }
 );
 
@@ -296,13 +292,13 @@ if(
 
   if (!acceptAnswers) {
 
-  document
-    .getElementById("status")
-    .innerHTML =
-    "⛔ Afstemningen er lukket";
+    document
+      .getElementById("status")
+      .innerHTML =
+      "⛔ Afstemningen er lukket";
 
-  return;
-}
+    return;
+  }
 
  const gameSnapshot =
   await getDoc(
