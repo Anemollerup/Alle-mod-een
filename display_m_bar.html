@@ -460,22 +460,22 @@ bucketSize =
    const count =
      buckets[bucket];
 
-   histogram.innerHTML += `
-   <div class="row">
+    histogram.innerHTML += `
+    <div class="row">
 
-      <div class="label">
-      ${bucket}-${Number(bucket)+9}
-      </div>
+        <div class="label">
+          ${bucket}-${bucket + bucketSize - 1}
+        </div>
 
       <div class="bar"
-           style="width:${count*25}px">
+            style="width:${count*25}px">
       </div>
 
-      <div>
-      ${count}
-      </div>
-
-   </div>
+    <div>
+    
+    ${count}
+    </div>
+    </div>
    `;
  });
 
