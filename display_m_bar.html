@@ -177,6 +177,8 @@ body{
 
 </head>
 
+<body>
+
 <div id="finalScreen"
      style="display:none;">
 
@@ -192,8 +194,6 @@ body{
   </h2>
 
 </div>
-
-<body>
 
 <div id="welcome">
 
@@ -307,6 +307,7 @@ let previousRound = 0;
 
 let playerGuess = 0;
 let actualResult = 0;
+let playerName = "DELTAGEREN";
 
 let showAverage = false;
 let showActual = false;
@@ -317,6 +318,8 @@ let maxGuess = 0;
 
 let rangeMin = 0;
 let rangeMax = 20;
+
+
 
 onSnapshot(
  doc(db,"Games","current"),
@@ -337,7 +340,7 @@ onSnapshot(
     const showFinal =
       data.showFinal || false;
 
-    const playerName =
+    playerName =
       data.playerName || "DELTAGEREN";
 
     const audienceWins =
