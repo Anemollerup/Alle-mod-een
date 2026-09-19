@@ -151,6 +151,17 @@ body{
     text-transform:uppercase;
 }
 
+#liveStats{
+
+    margin-top:20px;
+
+    font-size:28px;
+
+    font-weight:bold;
+
+    color:#005a9c;
+}
+
 </style>
 
 </head>
@@ -186,6 +197,8 @@ Svar modtaget
 <div id="count">
 0
 </div>
+
+<div id="liveStats"></div>
 
 <div id="results">
 </div>
@@ -321,6 +334,10 @@ onSnapshot(
         .getElementById("scoreBarContainer")
         .style.display = "none";
 
+        document
+        .getElementById("liveStats")
+        .innerHTML = "";
+
         previousRound = currentRound;
 
     }
@@ -415,6 +432,16 @@ onSnapshot(
 
    }
 
+   document
+  .getElementById("liveStats")
+  .innerHTML =
+
+  `Gennemsnit: ${averageGuess.toFixed(1)}
+   &nbsp;&nbsp;&nbsp;
+   Min: ${minGuess}
+   &nbsp;&nbsp;&nbsp;
+   Max: ${maxGuess}`;
+
    drawHistogram(values);
 
  });
@@ -454,31 +481,38 @@ values.forEach(v => {
 
 });
 
- Object.keys(buckets)
- .sort((a,b)=>a-b)
- .forEach(bucket => {
+Object.keys(buckets)
+.sort((a,b)=>a-b)
+.forEach(bucket => {
 
    const count =
      buckets[bucket];
 
-    histogram.innerHTML += `
+   const bucketStart =
+     Number(bucket);
+
+   const bucketEnd =
+     bucketStart + bucketSize - 1;
+
+   histogram.innerHTML += `
     <div class="row">
 
-        <div class="label">
-          ${bucket}-${bucket + bucketSize - 1}
-        </div>
-
-      <div class="bar"
-            style="width:${count*25}px">
+      <div class="label">
+        ${bucketStart}-${bucketEnd}
       </div>
 
-    <div>
-    
-    ${count}
-    </div>
+      <div class="bar"
+           style="width:${count*25}px">
+      </div>
+
+      <div>
+        ${count}
+      </div>
+
     </div>
    `;
- });
+
+});
 
 }
 
@@ -633,7 +667,7 @@ setInterval(()=>{
       document
        .getElementById("histogram")
        .style.display =
-       "none";
+       "block";
 
        document
         .getElementById("scoreBarContainer")
@@ -643,6 +677,11 @@ setInterval(()=>{
        document
         .getElementById("results")
         .innerHTML = "";
+
+       document
+        .getElementById("liveStats")
+        .style.display =
+        "block";
 
   }
   else{
@@ -661,6 +700,11 @@ setInterval(()=>{
         .getElementById("scoreBarContainer")
         .style.display =
         "block";
+
+       document
+        .getElementById("liveStats")
+        .style.display =
+        "none";
 
         drawScoreBar();
 

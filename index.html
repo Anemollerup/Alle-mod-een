@@ -168,6 +168,13 @@ onSnapshot(
    currentRound =
      data.round;
 
+  console.log(
+    "Round:",
+    currentRound,
+    "Previous:",
+    previousRound
+  );
+
   if(currentRound === 0){
 
     document
@@ -243,6 +250,14 @@ onSnapshot(
     "inline";
 
   document
+    .getElementById("guess")
+    .disabled = false;
+
+  document
+    .getElementById("sendBtn")
+    .disabled = false;
+
+  document
     .getElementById("rangeText")
     .style.display =
     "block";
@@ -270,6 +285,8 @@ onSnapshot(
 
    if(currentRound !== previousRound){
 
+      console.log("Ny runde registreret");
+
       localStorage.removeItem(
         "answeredRound"
       );
@@ -291,14 +308,6 @@ onSnapshot(
         .getElementById("sendBtn")
         .style.display =
         "inline";
-
-      document
-        .getElementById("guess")
-        .disabled = false;
-
-      document
-        .getElementById("sendBtn")
-        .disabled = false;
 
       document
         .getElementById("status")
