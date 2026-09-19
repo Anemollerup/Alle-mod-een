@@ -144,6 +144,10 @@ onSnapshot(
     if(currentRound === 0){
 
       document
+      .getElementById("status")
+      .innerHTML = "";
+
+      document
         .getElementById("welcomeScreen")
         .style.display =
         "block";
@@ -258,7 +262,7 @@ onSnapshot(
 
     acceptAnswers =
       data.acceptAnswers;
-      
+
   }
 );
 

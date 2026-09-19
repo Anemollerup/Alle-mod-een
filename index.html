@@ -171,6 +171,10 @@ onSnapshot(
   if(currentRound === 0){
 
     document
+    .getElementById("status")
+    .innerHTML = "";
+
+    document
       .getElementById("welcomeScreen")
       .style.display =
       "block";
@@ -296,8 +300,13 @@ onSnapshot(
         .getElementById("sendBtn")
         .disabled = false;
 
+      document
+        .getElementById("status")
+        .innerHTML = "";
+
       previousRound =
         currentRound;
+
    }
 
  });
