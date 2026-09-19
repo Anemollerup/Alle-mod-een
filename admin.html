@@ -267,6 +267,10 @@ document
  "click",
  async ()=>{
 
+    document
+    .getElementById("resultBox")
+    .innerHTML = "";
+
    const title =
      document
      .getElementById("question1")
@@ -302,6 +306,10 @@ document
        actualResult:0
      }
    );
+document
+    .getElementById("status")
+    .innerHTML =
+    "✅ Runde 1 startet";
 
  });
 
@@ -310,6 +318,10 @@ document
 .addEventListener(
  "click",
  async ()=>{
+
+  document
+  .getElementById("resultBox")
+  .innerHTML = "";
 
    const title =
      document
@@ -346,7 +358,10 @@ document
        actualResult:0
      }
    );
-
+document
+    .getElementById("status")
+    .innerHTML =
+    "✅ Runde 2 startet";
  });
 
 document
@@ -354,6 +369,10 @@ document
 .addEventListener(
  "click",
  async ()=>{
+
+  document
+  .getElementById("resultBox")
+  .innerHTML = "";
 
    const title =
      document
@@ -390,20 +409,19 @@ document
        actualResult:0
      }
    );
-
+document
+    .getElementById("status")
+    .innerHTML =
+    "✅ Runde 3 startet";
  });
 
 
  document
- .getElementById("showAverageBtn")
+ .getElementById("showAverageBtn1")
  .addEventListener(
  "click",
  async ()=>{
 
-  const actual =
-   Number(
-    document.getElementById("actualValue").value
-   );
 
   await updateDoc(
     doc(db,"Games","current"),
@@ -412,22 +430,63 @@ document
     }
   );
 
-  const gameSnapshot =
-   await getDoc(
-    doc(db,"Games","current")
-   );
+  document
+  .getElementById("status")
+  .innerHTML =
+  "✅ Publikumsgennemsnit vist";
 
-  const currentRound =
-   gameSnapshot.data().round;
+});
 
-  const snapshot =
+document
+ .getElementById("showAverageBtn2")
+ .addEventListener(
+ "click",
+ async ()=>{
+
+
+  await updateDoc(
+    doc(db,"Games","current"),
+    {
+      showAverage: true
+    }
+  );
+
+  document
+  .getElementById("status")
+  .innerHTML =
+  "✅ Publikumsgennemsnit vist";
+  });
+
+document
+ .getElementById("showAverageBtn3")
+ .addEventListener(
+ "click",
+ async ()=>{
+
+
+  await updateDoc(
+    doc(db,"Games","current"),
+    {
+      showAverage: true
+    }
+  );
+
+  document
+  .getElementById("status")
+  .innerHTML =
+  "✅ Publikumsgennemsnit vist";
+
+});
+
+
+const snapshot =
    await getDocs(
     collection(db,"guesses")
    );
 
-  let answers = [];
+let answers = [];
 
-  snapshot.forEach(docItem => {
+snapshot.forEach(docItem => {
 
    const data =
     docItem.data();
@@ -435,65 +494,15 @@ document
    if(data.round === currentRound){
       answers.push(data.value);
    }
+  
+});
 
-  });
-
-  const average =
+const average =
    answers.reduce((a,b)=>a+b,0)
    / answers.length;
 
-  const audienceDistance =
-   Math.abs(average - actual);
-
-  const playerDistance =
-   Math.abs(playerGuess - actual);
-
-  const winner =
-   audienceDistance < playerDistance
-   ? "👥 PUBLIKUM"
-   : "🧍 DELTAGEREN";
-
-  document
-   .getElementById("resultBox")
-   .innerHTML = `
-
-   <h3>${winner} VINDER</h3>
-
-   <p>
-   Antal svar:
-   ${answers.length}
-   </p>
-
-   <p>
-   Publikum:
-   ${average.toFixed(1)}
-   </p>
-
-   <p>
-   Deltager:
-   ${playerGuess}
-   </p>
-
-   <p>
-   Faktisk:
-   ${actual}
-   </p>
-
-   <p>
-   Publikums afvigelse:
-   ${audienceDistance.toFixed(1)}
-   </p>
-
-   <p>
-   Deltagerens afvigelse:
-   ${playerDistance.toFixed(1)}
-   </p>
-   `;
- }
-);
-
 document
-.getElementById("revealBtn")
+.getElementById("revealBtn1")
 .addEventListener(
  "click",
  async ()=>{
@@ -501,7 +510,7 @@ document
    const actual =
      Number(
        document
-       .getElementById("actualValue")
+       .getElementById("actualValue1")
        .value
      );
 
@@ -509,11 +518,87 @@ document
      doc(db,"Games","current"),
      {
        actualResult: actual,
-       showActual: true
+       showActual:true
      }
    );
 
+   document
+     .getElementById("status")
+     .innerHTML =
+     "✅ Resultat vist";
+
  });
+
+document
+.getElementById("revealBtn2")
+.addEventListener(
+ "click",
+ async ()=>{
+
+   const actual =
+     Number(
+       document
+       .getElementById("actualValue2")
+       .value
+     );
+
+   await updateDoc(
+     doc(db,"Games","current"),
+     {
+       actualResult: actual,
+       showActual:true
+     }
+   );
+
+   document
+     .getElementById("status")
+     .innerHTML =
+     "✅ Resultat vist";
+
+ });
+
+ document
+.getElementById("revealBtn3")
+.addEventListener(
+ "click",
+ async ()=>{
+
+   const actual =
+     Number(
+       document
+       .getElementById("actualValue3")
+       .value
+     );
+
+   await updateDoc(
+     doc(db,"Games","current"),
+     {
+       actualResult: actual,
+       showActual:true
+     }
+   );
+
+   document
+     .getElementById("status")
+     .innerHTML =
+     "✅ Resultat vist";
+
+ });
+
+onSnapshot(
+ doc(db,"Games","current"),
+ snapshot => {
+
+   const data =
+     snapshot.data();
+
+   document
+     .getElementById("roundNumber")
+     .innerText =
+     data.round;
+
+ });
+
 
 document
   .getElementById("resetGame")
@@ -546,6 +631,7 @@ document
       doc(db,"Games","current"),
       {
         round: 0,
+        title:"",
         playerGuess: 0,
         actualResult: 0,
         showAverage: false,
