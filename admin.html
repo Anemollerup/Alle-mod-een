@@ -202,6 +202,16 @@ Aktuel runde:
 <span id="roundNumber"></span>
 </p>
 
+<input
+  id="playerName"
+  placeholder="Deltagerens navn">
+
+<button id="showFinalBtn">
+🏆 Vis vinder
+</button>
+
+<hr>
+
 <button id="resetGame">
 Nulstil spil
 </button>
@@ -801,6 +811,7 @@ document
       round2Winner:"",
       round3Winner:"",
 
+      playerName:"",
       showFinal:false
     }
   );
@@ -928,6 +939,27 @@ function updateRoundDisplay(round){
       }
 
 }
+
+document
+.getElementById("showFinalBtn")
+.addEventListener(
+ "click",
+ async ()=>{
+
+   const playerName =
+     document
+       .getElementById("playerName")
+       .value;
+
+   await updateDoc(
+     doc(db,"Games","current"),
+     {
+       showFinal:true,
+       playerName:playerName
+     }
+   );
+
+ });
 
 </script>
 
