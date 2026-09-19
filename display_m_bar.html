@@ -430,14 +430,23 @@ function drawHistogram(values){
     return;
  }
 
- const bucketSize = 10;
+const span =
+  rangeMax - rangeMin;
+
+let bucketSize =
+  Math.ceil(span / 5);
+
+bucketSize =
+  Math.ceil(bucketSize / 5) * 5;
+
  const buckets = {};
 
  values.forEach(v => {
 
    const bucket =
-     Math.floor(v / bucketSize)
-      * bucketSize;
+     Math.floor(v - rangeMin / bucketSize)
+      * bucketSize
+      + rangeMin;
 
    buckets[bucket] =
      (buckets[bucket] || 0) + 1;
