@@ -439,19 +439,20 @@ let bucketSize =
 bucketSize =
   Math.ceil(bucketSize / 5) * 5;
 
- const buckets = {};
+const buckets = {};
 
- values.forEach(v => {
+values.forEach(v => {
 
-   const bucket =
-     Math.floor(v - rangeMin / bucketSize)
-      * bucketSize
-      + rangeMin;
+  const bucket =
+    Math.floor(
+      (v - rangeMin) / bucketSize
+    ) * bucketSize
+    + rangeMin;
 
-   buckets[bucket] =
-     (buckets[bucket] || 0) + 1;
+  buckets[bucket] =
+    (buckets[bucket] || 0) + 1;
 
- });
+});
 
  Object.keys(buckets)
  .sort((a,b)=>a-b)
