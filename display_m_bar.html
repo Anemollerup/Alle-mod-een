@@ -514,16 +514,15 @@ onSnapshot(
 
    }
 
-  document
-    .getElementById("liveStats")
-    .innerHTML =
-    `Publikums gennemsnit:
-    ${averageGuess.toFixed(1)}`;
+  if(showAverage){
 
-console.log(
-  "Antal svar:",
-  values.length
-);
+    document
+      .getElementById("liveStats")
+      .innerHTML =
+      `Publikums gennemsnit:
+      ${averageGuess.toFixed(1)}`;
+
+  }
 
    drawHistogram(values);
 
@@ -818,10 +817,12 @@ setInterval(()=>{
         .style.display =
         "block";
 
-       document
-        .getElementById("liveStats")
-        .style.display =
-        "block";
+        document
+          .getElementById("liveStats")
+          .style.display =
+          showAverage
+            ? "block"
+            : "none";
 
         drawScoreBar();
 
